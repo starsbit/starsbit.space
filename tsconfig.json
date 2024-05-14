@@ -19,13 +19,9 @@
     "target": "ES2022",
     "module": "ES2022",
     "useDefineForClassFields": false,
-    "lib": [
-      "ES2022",
-      "dom"
-    ],
-    "types": [
-        "@cloudflare/workers-types/2023-07-01"
-    ]
+    "strictPropertyInitialization": false,
+    "lib": ["ES2022", "dom"],
+    "types": ["@cloudflare/workers-types/2023-07-01"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

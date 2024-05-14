@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /admin/
+Allow: /
+Allow: /sitemap.xml
+Allow: /blog/
+Sitemap: /sitemap.xml
