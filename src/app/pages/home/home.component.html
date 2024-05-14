@@ -1,0 +1,158 @@
+<div
+  class="smooth-scroll min-h-screen w-full bg-gray-100 dark:bg-gray-950 page-padding"
+>
+  <header
+    class="header flex justify-between items-start dark:dark:text-white text-black text-2xl"
+  >
+    <div class="copyright-header font-bold font-sans header-item">
+      STARSBIT—{{ copyrightYear }}
+    </div>
+    <button (click)="toggleDarkmode()">
+      @if (!themeService.darkmode) {
+      <i class="material-icons header-item">dark_mode</i>
+      } @else {
+      <i class="material-icons header-item">light_mode</i>
+      }
+    </button>
+  </header>
+
+  <main>
+    <section class="pb-48">
+      <div class="h-1/4 pt-36 pb-24">
+        <img
+          [ngSrc]="
+            themeService.darkmode
+              ? 'assets/images/starsbit_logo_transparent_white.png'
+              : 'assets/images/starsbit_logo_transparent.png'
+          "
+          width="750"
+          height="312"
+          priority
+          alt="starsbit logo"
+          class="logo object-contain mx-auto"
+        />
+      </div>
+      <div
+        class="name text-3xl font-sans dark:text-white text-black flex row-auto"
+      >
+        <p class="font-bold p-1">stars</p>
+        <p class="p-1">//</p>
+        <p class="p-1">starsbit</p>
+      </div>
+    </section>
+
+    <hr class="splitter my-8 border-t border-gray-700" />
+
+    <section class="projects pb-48">
+      <h2
+        class="projects-header text-2xl font-sans dark:text-white text-black mb-4"
+      >
+        CURRENT PROJECTS
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <stars-project
+          description="Daily guess Blue Archive characters with attributes as clues. Blue Archive meets Wordle."
+          title="Bardle"
+          link="https://bardle.net/"
+          thumbnail="assets/images/projects/bardle_initial.png"
+          thumbnailSecond="assets/images/projects/bardle.png"
+          class="project"
+        ></stars-project>
+        <stars-project
+          description="Personal blog that contains various topics that I worked on."
+          title="Blog"
+          route="/blog"
+          thumbnail="assets/images/projects/blog_initial.png"
+          thumbnailSecond="assets/images/projects/blog.png"
+          class="project"
+        ></stars-project>
+      </div>
+    </section>
+
+    <section class="social-links flex justify-center space-x-4 flex-wrap">
+      <a
+        href="https://twitter.com/starsbit1"
+        target="_blank"
+        [class]="socialLinkCssClass"
+      >
+        <img
+          ngSrc="assets/images/x.svg"
+          alt="X"
+          width="40"
+          height="40"
+          [class]="svgFilterCssClass"
+        />
+      </a>
+      <a
+        href="https://ko-fi.com/starsbit"
+        target="_blank"
+        [class]="socialLinkCssClass"
+      >
+        <img
+          ngSrc="assets/images/ko-fi.svg"
+          alt="Ko-Fi"
+          width="40"
+          height="40"
+          [class]="svgFilterCssClass"
+        />
+      </a>
+      <!-- <a
+        href="https://discordid.netlify.app/?id=226376714974920704"
+        target="_blank"
+        [class]="socialLinkCssClass"
+      >
+        <img
+          ngSrc="assets/images/discord.svg"
+          alt="Discord"
+          width="40"
+          height="40"
+          [class]="svgFilterCssClass"
+        />
+      </a> -->
+      <a
+        href="https://steamcommunity.com/profiles/76561198162091272"
+        target="_blank"
+        [class]="socialLinkCssClass"
+      >
+        <img
+          ngSrc="assets/images/steam.svg"
+          alt="Discord"
+          width="40"
+          height="40"
+          [class]="svgFilterCssClass"
+        />
+      </a>
+      <a
+        href="https://anilist.co/user/starsbit/"
+        target="_blank"
+        [class]="socialLinkCssClass"
+      >
+        <img
+          ngSrc="assets/images/anilist.svg"
+          alt="Anilist"
+          width="40"
+          height="40"
+          [class]="svgFilterCssClass"
+        />
+      </a>
+      <a
+        href="https://github.com/starsbit"
+        target="_blank"
+        [class]="socialLinkCssClass"
+      >
+        <img
+          ngSrc="assets/images/github.svg"
+          alt="Github"
+          width="40"
+          height="40"
+          [class]="svgFilterCssClass"
+        />
+      </a>
+    </section>
+    <footer class="footer">
+      <div class="text-center dark:text-white text-black text-sm py-8">
+        © {{ copyrightYear }} starsbit. All rights reserved.
+      </div>
+    </footer>
+  </main>
+</div>
