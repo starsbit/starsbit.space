@@ -59,42 +59,64 @@ export class HomeComponent implements AfterViewInit {
     });
 
     timeline
-      .set('body', {
-        autoAlpha: 1,
-      })
-      .from('.header-item', {
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.4,
-        delay: 0.5,
-      })
-      .from('.name', {
-        y: 100,
-        opacity: 0,
-        duration: 0.4,
-      })
-      .from('.description', {
-        y: 100,
-        opacity: 0,
-        duration: 0.4,
-      })
-      .from('.splitter, .projects-header', {
-        y: 100,
-        opacity: 0,
-        duration: 0.4,
-      })
-      .from('.project', {
-        y: 100,
-        opacity: 0,
-        duration: 1,
-        stagger: 0.2,
-      })
-      .from('.social-link, .social-link-dark', {
-        y: 100,
-        opacity: 0,
-        duration: 1,
-        stagger: 0.2,
-      });
+      .from(
+        '.header-item',
+        {
+          duration: 0.4,
+          y: '-1000',
+          stagger: 0.1,
+          opacity: 0,
+        },
+        0
+      )
+      .from(
+        '.name',
+        {
+          x: '-100',
+          duration: 0.4,
+          opacity: 0,
+        },
+        0.3
+      )
+      .from(
+        '.description-item',
+        {
+          y: '100',
+          opacity: 0,
+          duration: 0.4,
+          stagger: 0.1,
+        },
+        0.6
+      )
+      .from(
+        '.splitter, .projects-header',
+        {
+          x: '-100%',
+          duration: 0.4,
+          opacity: 0,
+        },
+        0.8
+      )
+      .from(
+        '.project',
+        {
+          y: 100,
+          opacity: 0,
+          duration: 1,
+          stagger: 0.2,
+        },
+        1.0
+      )
+      .from(
+        '.social-link, .social-link-dark',
+        {
+          y: 100,
+          opacity: 0,
+          duration: 1,
+          stagger: 0.2,
+        },
+        1.4
+      );
   }
 
   toggleDarkmode() {
