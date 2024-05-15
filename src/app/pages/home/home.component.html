@@ -1,5 +1,5 @@
 <div
-  class="smooth-scroll min-h-screen w-full bg-gray-100 dark:bg-gray-950 page-padding"
+  class="smooth-scroll min-h-screen w-full bg-gray-300 dark:bg-gray-900 page-padding"
 >
   <header
     class="header flex justify-between items-start dark:dark:text-white text-black text-2xl"
@@ -20,11 +20,7 @@
     <section class="pb-48">
       <div class="h-1/4 pt-36 pb-24">
         <img
-          [ngSrc]="
-            themeService.darkmode
-              ? 'assets/images/starsbit_logo_transparent_white.png'
-              : 'assets/images/starsbit_logo_transparent.png'
-          "
+          [ngSrc]="imageSource"
           width="750"
           height="312"
           priority
@@ -41,7 +37,7 @@
       </div>
     </section>
 
-    <hr class="splitter my-8 border-t border-gray-700" />
+    <hr class="splitter my-8 border-t border-gray-700 dark:border-gray-300" />
 
     <section class="projects pb-48">
       <h2

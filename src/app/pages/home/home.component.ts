@@ -104,4 +104,10 @@ export class HomeComponent implements AfterViewInit {
     }
     return 'social-link';
   }
+
+  get imageSource() {
+    return this.themeService.darkmode
+      ? 'assets/images/starsbit_logo_transparent_white.png'
+      : 'assets/images/starsbit_logo_transparent.png';
+  }
 }
