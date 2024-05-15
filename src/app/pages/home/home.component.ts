@@ -29,6 +29,20 @@ export class HomeComponent implements AfterViewInit {
   ) {}
 
   ngAfterViewInit() {
+    this.themeService.isDarkMode$.subscribe((isDark) => {
+      if (!isPlatformBrowser(this.platformId)) {
+        return;
+      }
+
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+      } else if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark');
+      }
+
+      this.cdr.detectChanges();
+    });
+
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
@@ -75,9 +89,6 @@ export class HomeComponent implements AfterViewInit {
 
   toggleDarkmode() {
     this.themeService.darkmode = !this.themeService.darkmode;
-    const root = document.documentElement;
-    root.classList.toggle('dark');
-    this.cdr.detectChanges();
   }
 
   get svgFilterCssClass() {
