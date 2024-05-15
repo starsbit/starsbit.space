@@ -57,3 +57,16 @@
 .social-link:hover img.filter-black {
   filter: brightness(100);
 }
+
+.spin-animation {
+  animation: spin 0.5s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
+}

@@ -26,6 +26,8 @@
           priority
           alt="starsbit logo"
           class="logo object-contain mx-auto"
+          [ngClass]="{ 'spin-animation': spin }"
+          (click)="spinLogo()"
         />
       </div>
       <div
@@ -34,6 +36,18 @@
         <p class="font-bold p-1">stars</p>
         <p class="p-1">//</p>
         <p class="p-1">starsbit</p>
+      </div>
+
+      <div class="description text-lg font-sans dark:text-white text-black">
+        <p><strong>software engineer</strong>, algorithm researcher</p>
+        <p>
+          specialized in the <strong>space sector</strong>; mainly working on
+          <strong>satellite</strong> communication and planning
+        </p>
+        <p>for my <strong>blog</strong>, all opinions are my own</p>
+        @if(themeService.darkmode) {
+        <p>interface looks best in <strong>light mode</strong></p>
+        }
       </div>
     </section>
 

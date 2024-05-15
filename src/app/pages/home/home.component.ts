@@ -1,4 +1,8 @@
-import { isPlatformBrowser, NgOptimizedImage } from '@angular/common';
+import {
+  CommonModule,
+  isPlatformBrowser,
+  NgOptimizedImage,
+} from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -14,13 +18,14 @@ import { ProjectComponent } from './components/project/project.component';
 @Component({
   selector: 'stars-home',
   standalone: true,
-  imports: [NgOptimizedImage, ProjectComponent],
+  imports: [CommonModule, NgOptimizedImage, ProjectComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent implements AfterViewInit {
   copyrightYear = new Date().getFullYear();
+  spin = false;
 
   constructor(
     public readonly themeService: ThemeService,
@@ -68,6 +73,11 @@ export class HomeComponent implements AfterViewInit {
         opacity: 0,
         duration: 0.4,
       })
+      .from('.description', {
+        y: 100,
+        opacity: 0,
+        duration: 0.4,
+      })
       .from('.splitter, .projects-header', {
         y: 100,
         opacity: 0,
@@ -109,5 +119,13 @@ export class HomeComponent implements AfterViewInit {
     return this.themeService.darkmode
       ? 'assets/images/starsbit_logo_transparent_white.png'
       : 'assets/images/starsbit_logo_transparent.png';
+  }
+
+  spinLogo() {
+    this.spin = true;
+    setTimeout(() => {
+      this.spin = false;
+      this.cdr.detectChanges();
+    }, 500);
   }
 }
