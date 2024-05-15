@@ -3,4 +3,4 @@ Disallow: /admin/
 Allow: /
 Allow: /sitemap.xml
 Allow: /blog/
-Sitemap: /sitemap.xml
+Sitemap: https://starsbit.space/sitemap.xml
