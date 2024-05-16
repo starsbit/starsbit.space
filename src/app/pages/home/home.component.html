@@ -1,5 +1,5 @@
 <div
-  class="smooth-scroll min-h-screen w-full bg-gray-300 dark:bg-gray-900 page-padding"
+  class="smooth-scroll min-h-screen w-full bg-gray-300 dark:bg-stone-900 page-padding"
 >
   <header
     class="header flex justify-between items-start dark:dark:text-white text-black text-2xl"
@@ -85,90 +85,11 @@
       </div>
     </section>
 
-    <section class="social-links flex justify-center space-x-4 flex-wrap">
-      <a
-        href="https://twitter.com/starsbit1"
-        target="_blank"
-        [class]="socialLinkCssClass"
-      >
-        <img
-          ngSrc="assets/images/x.svg"
-          alt="X"
-          width="40"
-          height="40"
-          [class]="svgFilterCssClass"
-        />
-      </a>
-      <a
-        href="https://ko-fi.com/starsbit"
-        target="_blank"
-        [class]="socialLinkCssClass"
-      >
-        <img
-          ngSrc="assets/images/ko-fi.svg"
-          alt="Ko-Fi"
-          width="40"
-          height="40"
-          [class]="svgFilterCssClass"
-        />
-      </a>
-      <!-- <a
-        href="https://discordid.netlify.app/?id=226376714974920704"
-        target="_blank"
-        [class]="socialLinkCssClass"
-      >
-        <img
-          ngSrc="assets/images/discord.svg"
-          alt="Discord"
-          width="40"
-          height="40"
-          [class]="svgFilterCssClass"
-        />
-      </a> -->
-      <a
-        href="https://steamcommunity.com/profiles/76561198162091272"
-        target="_blank"
-        [class]="socialLinkCssClass"
-      >
-        <img
-          ngSrc="assets/images/steam.svg"
-          alt="Discord"
-          width="40"
-          height="40"
-          [class]="svgFilterCssClass"
-        />
-      </a>
-      <a
-        href="https://anilist.co/user/starsbit/"
-        target="_blank"
-        [class]="socialLinkCssClass"
-      >
-        <img
-          ngSrc="assets/images/anilist.svg"
-          alt="Anilist"
-          width="40"
-          height="40"
-          [class]="svgFilterCssClass"
-        />
-      </a>
-      <a
-        href="https://github.com/starsbit"
-        target="_blank"
-        [class]="socialLinkCssClass"
-      >
-        <img
-          ngSrc="assets/images/github.svg"
-          alt="Github"
-          width="40"
-          height="40"
-          [class]="svgFilterCssClass"
-        />
-      </a>
+    <section>
+      <stars-social-links></stars-social-links>
     </section>
     <footer class="footer">
-      <div class="text-center dark:text-white text-black text-sm py-8">
-        © {{ copyrightYear }} starsbit. All rights reserved.
-      </div>
+      <stars-footer></stars-footer>
     </footer>
   </main>
 </div>

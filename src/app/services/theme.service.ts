@@ -29,5 +29,15 @@ export class ThemeService {
   set darkmode(value: boolean) {
     this._darkmode = value;
     this._themeChangeSubject.next(value);
+
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    if (this._darkmode) {
+      document.documentElement.classList.add('dark');
+    } else if (document.documentElement.classList.contains('dark')) {
+      document.documentElement.classList.remove('dark');
+    }
   }
 }

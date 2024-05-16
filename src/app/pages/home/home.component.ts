@@ -9,23 +9,35 @@ import {
   ChangeDetectorRef,
   Component,
   Inject,
+  OnDestroy,
   PLATFORM_ID,
 } from '@angular/core';
 import gsap from 'gsap';
+import { Subscription } from 'rxjs';
+import { FooterComponent } from '../../components/footer/footer.component';
+import { SocialLinksComponent } from '../../components/social-links/social-links.component';
 import { ThemeService } from '../../services/theme.service';
 import { ProjectComponent } from './components/project/project.component';
 
 @Component({
   selector: 'stars-home',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, ProjectComponent],
+  imports: [
+    CommonModule,
+    NgOptimizedImage,
+    ProjectComponent,
+    SocialLinksComponent,
+    FooterComponent,
+  ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomeComponent implements AfterViewInit {
+export class HomeComponent implements AfterViewInit, OnDestroy {
   copyrightYear = new Date().getFullYear();
   spin = false;
+
+  private readonly _subscriptions = new Subscription();
 
   constructor(
     public readonly themeService: ThemeService,
@@ -34,19 +46,11 @@ export class HomeComponent implements AfterViewInit {
   ) {}
 
   ngAfterViewInit() {
-    this.themeService.isDarkMode$.subscribe((isDark) => {
-      if (!isPlatformBrowser(this.platformId)) {
-        return;
-      }
-
-      if (isDark) {
-        document.documentElement.classList.add('dark');
-      } else if (document.documentElement.classList.contains('dark')) {
-        document.documentElement.classList.remove('dark');
-      }
-
-      this.cdr.detectChanges();
-    });
+    this._subscriptions.add(
+      this.themeService.isDarkMode$.subscribe(() => {
+        this.cdr.detectChanges();
+      })
+    );
 
     if (!isPlatformBrowser(this.platformId)) {
       return;
@@ -117,6 +121,10 @@ export class HomeComponent implements AfterViewInit {
         },
         1.4
       );
+  }
+
+  ngOnDestroy() {
+    this._subscriptions.unsubscribe();
   }
 
   toggleDarkmode() {

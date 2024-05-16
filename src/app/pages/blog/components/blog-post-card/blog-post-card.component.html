@@ -1,0 +1,39 @@
+<div class="flex flex-row dark:bg-stone-400 bg-white rounded-lg">
+  <!-- Thumbnail -->
+  <img
+    [src]="post.image"
+    alt="Post Thumbnail"
+    class="w-32 h-40 object-cover rounded-l-lg md:h-32"
+  />
+
+  <!-- Post Info -->
+  <div class="ml-4 rounded-lg" style="width: calc(100% - 9.5rem)">
+    <div
+      class="flex flex-col md:flex-row justify-between items-start md:items-center"
+    >
+      <!-- Title -->
+      <p class="text-lg font-bold font-sans mb-2 md:mb-0">{{ post.title }}</p>
+
+      <!-- Tags -->
+      <div class="flex flex-wrap pt-2 pb-2 mb-2 md:mb-0">
+        @for (tag of post.tags; track $index) {
+        <span
+          class="text-xs bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full mr-2 mb-1 mt-1"
+        >
+          {{ tag }}
+        </span>
+        }
+      </div>
+    </div>
+
+    <!-- Date -->
+    <p class="text-sm text-gray-500 mb-2 md:mb-0">{{ post.date | date }}</p>
+
+    <!-- Description -->
+    <p
+      class="text-sm text-gray-500 md:mb-0 overflow-hidden truncate max-w-full"
+    >
+      {{ post.description }}
+    </p>
+  </div>
+</div>
