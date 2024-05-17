@@ -6,6 +6,6 @@
     "image": "assets/images/blog/placeholder.jpg",
     "tags": ["test", "post"],
     "route": "test-post",
-    "published": true
+    "published": false
   }
 ]

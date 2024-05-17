@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
 import { BlogData } from '../blog-post/blog-post.model';
 
 @Component({
@@ -12,4 +13,10 @@ import { BlogData } from '../blog-post/blog-post.model';
 })
 export class BlogPostCardComponent {
   @Input() post: BlogData;
+
+  constructor(private router: Router) {}
+
+  onClick(event: MouseEvent) {
+    this.router.navigate(['/blog', this.post.route]);
+  }
 }

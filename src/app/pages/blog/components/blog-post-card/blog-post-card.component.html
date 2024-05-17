@@ -1,4 +1,7 @@
-<div class="flex flex-row dark:bg-stone-400 bg-white rounded-lg">
+<div
+  class="flex flex-row dark:bg-stone-400 bg-white rounded-lg transform transition-transform duration-300 hover:scale-105 cursor-pointer"
+  (click)="onClick($event)"
+>
   <!-- Thumbnail -->
   <img
     [src]="post.image"
