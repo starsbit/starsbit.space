@@ -15,6 +15,7 @@ import {
 import gsap from 'gsap';
 import { Subscription } from 'rxjs';
 import { FooterComponent } from '../../components/footer/footer.component';
+import { LoadingComponent } from '../../components/loading/loading.component';
 import { SocialLinksComponent } from '../../components/social-links/social-links.component';
 import { ThemeService } from '../../services/theme.service';
 import { ProjectComponent } from './components/project/project.component';
@@ -28,6 +29,7 @@ import { ProjectComponent } from './components/project/project.component';
     ProjectComponent,
     SocialLinksComponent,
     FooterComponent,
+    LoadingComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
