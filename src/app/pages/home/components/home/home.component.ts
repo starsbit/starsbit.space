@@ -14,11 +14,10 @@ import {
 } from '@angular/core';
 import gsap from 'gsap';
 import { Subscription } from 'rxjs';
-import { FooterComponent } from '../../components/footer/footer.component';
-import { LoadingComponent } from '../../components/loading/loading.component';
-import { SocialLinksComponent } from '../../components/social-links/social-links.component';
-import { ThemeService } from '../../services/theme.service';
-import { ProjectComponent } from './components/project/project.component';
+import { FooterComponent } from '../../../../components/footer/footer.component';
+import { SocialLinksComponent } from '../../../../components/social-links/social-links.component';
+import { ThemeService } from '../../../../services/theme.service';
+import { ProjectComponent } from '../project/project.component';
 
 @Component({
   selector: 'stars-home',
@@ -29,7 +28,6 @@ import { ProjectComponent } from './components/project/project.component';
     ProjectComponent,
     SocialLinksComponent,
     FooterComponent,
-    LoadingComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',

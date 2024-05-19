@@ -4,7 +4,9 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./pages/home/home.component').then((m) => m.HomeComponent),
+      import('./pages/home/defered-home.component').then(
+        (m) => m.DeferedHomeComponent
+      ),
   },
   {
     path: 'blog',
