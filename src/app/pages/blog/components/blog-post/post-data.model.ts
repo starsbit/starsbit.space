@@ -8,4 +8,5 @@ export interface PostData {
   route: string;
   published: boolean;
   file: string;
+  author: string;
 }

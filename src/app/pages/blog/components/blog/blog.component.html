@@ -35,17 +35,32 @@
     <hr class="splitter my-8 border-t border-gray-700 dark:border-gray-300" />
 
     <!-- Blog Posts -->
-    <section class="blog-posts">
-      <h2 class="text-2xl font-sans dark:text-white text-black">
-        Recent Posts
-      </h2>
+    <section class="blog-posts flex flex-wrap">
+      <!-- Tags Section -->
+      <div class="tags w-full md:w-1/2 flex flex-col">
+        <h2 class="text-2xl font-sans dark:text-white text-black">Tags</h2>
 
-      @for (post of posts; track $index) {
-      <stars-blog-post-card
-        [postData]="post"
-        class="p-1"
-      ></stars-blog-post-card>
-      }
+        @for (tag of allTags; track $index) {
+        <span
+          class="non-copyable text-lg dark:bg-gray-200 bg-gray-800 dark:text-gray-700 text-gray-300 px-4 py-2 mb-4 rounded-full leading-none align-middle transform transition-transform duration-300 hover:scale-105 cursor-pointer"
+          (click)="filterPosts(tag)"
+          [ngClass]="{ 'bg-gray-600 dark:bg-gray-400': tag === selectedFilter }"
+        >
+          {{ tag }}
+        </span>
+        }
+      </div>
+
+      <!-- Recent Posts Section -->
+      <div class="w-full md:w-1/2 md:pl-8">
+        <h2 class="text-2xl font-sans dark:text-white text-black">
+          Recent Posts
+        </h2>
+
+        @for (post of filteredPosts; track $index) {
+        <stars-blog-post-card [postData]="post"></stars-blog-post-card>
+        }
+      </div>
     </section>
 
     <!-- About Section -->

@@ -7,6 +7,7 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { FooterComponent } from '../../../../components/footer/footer.component';
 import { HeaderComponent } from '../../../../components/header/header.component';
@@ -34,17 +35,39 @@ import { PostData } from '../blog-post/post-data.model';
 export class BlogComponent implements AfterViewInit, OnDestroy, OnInit {
   posts: PostData[] = [];
 
+  filteredPosts: PostData[] = [];
+
+  allTags: string[] = [];
+
+  selectedFilter: string | null = null;
+
   private readonly _subscriptions = new Subscription();
 
   constructor(
     public readonly themeService: ThemeService,
     private readonly cdr: ChangeDetectorRef,
-    private readonly blogPostDataClientService: BlogPostDataClientService
+    private readonly blogPostDataClientService: BlogPostDataClientService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute
   ) {}
 
   ngOnInit() {
     this.blogPostDataClientService.getBlogPostData().subscribe((data) => {
       this.posts = data.filter((post) => post.published);
+
+      this.allTags = Array.from(
+        new Set(this.posts.flatMap((post) => post.tags))
+      );
+      this.selectedFilter = this.route.snapshot.queryParams['tag'];
+
+      if (this.selectedFilter) {
+        this.filteredPosts = this.posts.filter((post) =>
+          post.tags.includes(this.selectedFilter!)
+        );
+      } else {
+        this.filteredPosts = this.posts;
+      }
+
       this.cdr.detectChanges();
     });
   }
@@ -59,5 +82,23 @@ export class BlogComponent implements AfterViewInit, OnDestroy, OnInit {
 
   ngOnDestroy() {
     this._subscriptions.unsubscribe();
+  }
+
+  filterPosts(tag: string) {
+    if (this.selectedFilter === tag) {
+      this.selectedFilter = null;
+      this.filteredPosts = this.posts;
+      this.router.navigate([], {
+        queryParams: { tag: null },
+      });
+      this.cdr.detectChanges();
+      return;
+    }
+    this.selectedFilter = tag;
+    this.filteredPosts = this.posts.filter((post) => post.tags.includes(tag));
+    this.router.navigate([], {
+      queryParams: { tag },
+    });
+    this.cdr.detectChanges();
   }
 }

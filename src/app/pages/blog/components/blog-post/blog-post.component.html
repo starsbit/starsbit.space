@@ -12,10 +12,22 @@
         class="banner object-cover w-full h-64 mx-auto relative rounded-2xl shadow-2xl"
       />
     </div>
-    <div
-      class="name text-3xl font-sans dark:text-white text-black flex row-auto"
-    >
-      {{ postData.title }}
+    <div class="flex row-auto justify-between items-center">
+      <div
+        class="name text-3xl font-sans dark:text-white text-black flex row-auto"
+      >
+        {{ postData.title }}
+      </div>
+      <div class="tags">
+        @for (tag of postData.tags; track $index) {
+        <span
+          class="text-sm dark:bg-gray-200 dark:hover:bg-gray-400 bg-gray-800 hover:bg-gray-600 dark:text-gray-700 dark:hover:text-gray-900 text-gray-300 hover:text-gray-100 px-2 py-1 rounded-full mr-2 mb-1 mt-1 leading-none align-middle cursor-pointer"
+          (click)="onTagClick(tag)"
+        >
+          {{ tag }}
+        </span>
+        }
+      </div>
     </div>
   </section>
 
@@ -35,7 +47,19 @@
 
   <hr class="splitter my-8 border-t border-gray-700 dark:border-gray-300" />
 
-  <section class="links">
+  <section
+    class="post-details text-lg font-sans dark:text-white text-black flex row-auto justify-between items-center"
+  >
+    <div class="date">
+      {{ postData.date | date : "longDate" }}
+    </div>
+    <div class="author">
+      <span>By </span>
+      <span>{{ postData.author }}</span>
+    </div>
+  </section>
+
+  <section class="links pt-16">
     <stars-social-links class="text-lg font-sans"></stars-social-links>
   </section>
 

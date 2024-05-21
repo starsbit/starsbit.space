@@ -8,6 +8,7 @@
     "tags": ["test", "post"],
     "route": "test-post",
     "published": false,
-    "file": "assets/data/blog-posts/test-blog-post.md"
+    "file": "assets/data/blog-posts/test-blog-post.md",
+    "author": "Test Author"
   }
 ]
