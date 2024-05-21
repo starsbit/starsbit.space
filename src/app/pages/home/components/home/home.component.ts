@@ -50,7 +50,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     this._subscriptions.add(
       this.themeService.isDarkMode$.subscribe(() => {
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       })
     );
 

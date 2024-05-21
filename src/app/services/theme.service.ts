@@ -1,12 +1,12 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ThemeService {
-  private readonly _themeChangeSubject = new BehaviorSubject<boolean>(false);
+  private readonly _themeChangeSubject = new ReplaySubject<boolean>(1);
 
   public isDarkMode$ = this._themeChangeSubject.asObservable();
 
@@ -18,6 +18,8 @@ export class ThemeService {
         window.matchMedia &&
         window.matchMedia('(prefers-color-scheme: dark)').matches;
 
+      this.initialSetup();
+
       this._themeChangeSubject.next(this._darkmode);
     }
   }
@@ -28,7 +30,6 @@ export class ThemeService {
 
   set darkmode(value: boolean) {
     this._darkmode = value;
-    this._themeChangeSubject.next(value);
 
     if (!isPlatformBrowser(this.platformId)) {
       return;
@@ -38,6 +39,14 @@ export class ThemeService {
       document.documentElement.classList.add('dark');
     } else if (document.documentElement.classList.contains('dark')) {
       document.documentElement.classList.remove('dark');
+    }
+
+    this._themeChangeSubject.next(value);
+  }
+
+  private initialSetup() {
+    if (this._darkmode) {
+      document.documentElement.classList.add('dark');
     }
   }
 }
