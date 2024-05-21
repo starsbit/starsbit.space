@@ -1,5 +1,5 @@
-@defer {
+@defer (on immediate) {
 <stars-blog></stars-blog>
-} @loading (minimum 500ms) {
+} @loading (after 100ms; minimum 500ms) {
 <stars-loading></stars-loading>
 }

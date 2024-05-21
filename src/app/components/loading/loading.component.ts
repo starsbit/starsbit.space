@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ThemeService } from '../../services/theme.service';
 
@@ -11,6 +11,8 @@ import { ThemeService } from '../../services/theme.service';
 })
 export class LoadingComponent implements OnInit {
   darkMode = false;
+
+  @Input() small = false;
 
   constructor(
     public readonly themeService: ThemeService,

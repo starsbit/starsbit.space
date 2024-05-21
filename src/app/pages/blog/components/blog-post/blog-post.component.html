@@ -22,7 +22,15 @@
   <hr class="splitter my-8 border-t border-gray-700 dark:border-gray-300" />
 
   <section class="post pt-16 pb-16">
-    <markdown [src]="postData.file"></markdown>
+    @if (!markdownRendered) {
+    <div class="flex justify-center items-center">
+      <stars-loading [small]="true"></stars-loading>
+    </div>
+    }
+    <markdown
+      [src]="postData.file"
+      (ready)="markdownRendered = true"
+    ></markdown>
   </section>
 
   <hr class="splitter my-8 border-t border-gray-700 dark:border-gray-300" />

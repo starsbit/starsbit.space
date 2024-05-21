@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { MarkdownModule } from 'ngx-markdown';
 import { FooterComponent } from '../../../../components/footer/footer.component';
 import { HeaderComponent } from '../../../../components/header/header.component';
+import { LoadingComponent } from '../../../../components/loading/loading.component';
 import { SocialLinksComponent } from '../../../../components/social-links/social-links.component';
 import { PostData } from './post-data.model';
 
@@ -15,6 +16,7 @@ import { PostData } from './post-data.model';
     FooterComponent,
     SocialLinksComponent,
     NgOptimizedImage,
+    LoadingComponent,
   ],
   templateUrl: './blog-post.component.html',
   styleUrl: './blog-post.component.scss',
@@ -22,4 +24,6 @@ import { PostData } from './post-data.model';
 })
 export class BlogPostComponent {
   @Input() postData: PostData;
+
+  markdownRendered = false;
 }

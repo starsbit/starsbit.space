@@ -1,5 +1,9 @@
+@if (small) {
+<mat-spinner [class]="spinnerColor"></mat-spinner>
+} @else {
 <div
   class="flex justify-center items-center h-screen bg-gray-300 dark:bg-stone-900"
 >
   <mat-spinner [class]="spinnerColor"></mat-spinner>
 </div>
+}
