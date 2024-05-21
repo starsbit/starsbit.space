@@ -4,8 +4,10 @@
     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean porta metus eu lacus ullamcorper, sit amet auctor lectus volutpat. Sed ipsum metus, lacinia et urna non, bibendum maximus justo. Praesent sed felis eu tortor dictum mollis. Sed id risus id dui tincidunt venenatis. Nulla facilisi. Aenean efficitur non nisl quis hendrerit. Aenean mollis diam diam, vitae tempor ligula volutpat nec. Nunc sit amet velit ex. Nulla a commodo ipsum, ac tincidunt libero. Nulla dictum lacus sed justo convallis gravida. Praesent et luctus ex, ut sollicitudin augue. Proin tempor id tortor ac laoreet. Aliquam vulputate dui metus, ac consectetur augue aliquet sed. ",
     "date": "1970-01-01",
     "image": "assets/images/blog/placeholder.jpg",
+    "thumbnail": "assets/images/blog/placeholder.jpg",
     "tags": ["test", "post"],
     "route": "test-post",
-    "published": false
+    "published": false,
+    "file": "assets/data/blog-posts/test-blog-post.md"
   }
 ]

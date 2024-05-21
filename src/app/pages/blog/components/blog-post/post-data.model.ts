@@ -1,9 +1,11 @@
-export interface BlogData {
+export interface PostData {
   title: string;
   description: string;
-  date: string;
+  date: Date;
   image: string;
+  thumbnail: string;
   tags: string[];
   route: string;
   published: boolean;
+  file: string;
 }

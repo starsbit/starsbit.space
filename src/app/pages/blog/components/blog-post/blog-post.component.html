@@ -1,3 +1,35 @@
-<div class="h-screen flex items-center justify-center">
-  <h1>WHY ARE YOU HERE?!</h1>
+<div
+  class="smooth-scroll min-h-screen w-full bg-gray-300 dark:bg-stone-900 page-padding"
+>
+  <stars-header route="/blog"></stars-header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="pt-16 pb-16">
+      <img
+        [src]="postData.image"
+        alt="starsbit header banner"
+        class="banner object-cover w-full h-64 mx-auto relative rounded-2xl shadow-2xl"
+      />
+    </div>
+    <div
+      class="name text-3xl font-sans dark:text-white text-black flex row-auto"
+    >
+      {{ postData.title }}
+    </div>
+  </section>
+
+  <hr class="splitter my-8 border-t border-gray-700 dark:border-gray-300" />
+
+  <section class="post pt-16 pb-16">
+    <markdown [src]="postData.file"></markdown>
+  </section>
+
+  <hr class="splitter my-8 border-t border-gray-700 dark:border-gray-300" />
+
+  <section class="links">
+    <stars-social-links class="text-lg font-sans"></stars-social-links>
+  </section>
+
+  <stars-footer></stars-footer>
 </div>

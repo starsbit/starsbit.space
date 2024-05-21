@@ -9,11 +9,12 @@ import {
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { FooterComponent } from '../../../../components/footer/footer.component';
+import { HeaderComponent } from '../../../../components/header/header.component';
 import { SocialLinksComponent } from '../../../../components/social-links/social-links.component';
 import { ThemeService } from '../../../../services/theme.service';
 import { BlogPostDataClientService } from '../../../../services/web/blog-post-data-client.service';
 import { BlogPostCardComponent } from '../blog-post-card/blog-post-card.component';
-import { BlogData } from '../blog-post/blog-post.model';
+import { PostData } from '../blog-post/post-data.model';
 
 @Component({
   selector: 'stars-blog',
@@ -23,6 +24,7 @@ import { BlogData } from '../blog-post/blog-post.model';
     NgOptimizedImage,
     SocialLinksComponent,
     FooterComponent,
+    HeaderComponent,
     BlogPostCardComponent,
   ],
   templateUrl: './blog.component.html',
@@ -30,9 +32,7 @@ import { BlogData } from '../blog-post/blog-post.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlogComponent implements AfterViewInit, OnDestroy, OnInit {
-  copyrightYear = new Date().getFullYear();
-
-  posts: BlogData[] = [];
+  posts: PostData[] = [];
 
   private readonly _subscriptions = new Subscription();
 
@@ -59,9 +59,5 @@ export class BlogComponent implements AfterViewInit, OnDestroy, OnInit {
 
   ngOnDestroy() {
     this._subscriptions.unsubscribe();
-  }
-
-  toggleDarkmode() {
-    this.themeService.darkmode = !this.themeService.darkmode;
   }
 }

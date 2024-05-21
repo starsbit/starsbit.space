@@ -1,0 +1,67 @@
+@import "../../../../../styles/variables";
+
+.post {
+  max-width: $blog-content-siye;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+:host .post ::ng-deep {
+  color: $blog-dark-color;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+:host :host-context(.dark) .post ::ng-deep {
+  color: $blog-light-color;
+}
+
+:host .post ::ng-deep hr {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+
+  border-top-width: 1px;
+  border-color: $blog-dark-bg;
+}
+
+:host :host-context(.dark) .post ::ng-deep hr {
+  border-color: $blog-light-bg;
+}
+
+:host .post ::ng-deep a {
+  text-decoration: underline dotted;
+  color: $blog-dark-bg;
+
+  &:hover {
+    text-decoration: underline solid;
+    color: $blog-dark-color;
+    font-weight: bold;
+  }
+}
+
+:host :host-context(.dark) .post ::ng-deep a {
+  text-decoration: underline dotted;
+  color: $blog-light-bg;
+
+  &:hover {
+    text-decoration: underline solid;
+    color: $blog-light-color;
+    font-weight: bold;
+  }
+}
+
+:host .post ::ng-deep img {
+  max-width: 100%;
+  height: auto;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.page-padding {
+  padding-top: 6%;
+  padding-bottom: 2%;
+  padding-left: 8%;
+  padding-right: 8%;
+  hyphens: auto;
+  text-align: justify;
+}

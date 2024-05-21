@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
-import { BlogData } from '../blog-post/blog-post.model';
+import { PostData } from '../blog-post/post-data.model';
 
 @Component({
   selector: 'stars-blog-post-card',
@@ -12,11 +12,11 @@ import { BlogData } from '../blog-post/blog-post.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlogPostCardComponent {
-  @Input() post: BlogData;
+  @Input() postData: PostData;
 
   constructor(private router: Router) {}
 
   onClick(event: MouseEvent) {
-    this.router.navigate(['/blog', this.post.route]);
+    this.router.navigate(['/blog', this.postData.route]);
   }
 }

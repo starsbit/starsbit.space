@@ -1,20 +1,7 @@
 <div
   class="smooth-scroll min-h-screen w-full bg-gray-300 dark:bg-stone-900 page-padding"
 >
-  <header
-    class="header flex justify-between items-start dark:dark:text-white text-black text-2xl"
-  >
-    <div class="copyright-header font-bold font-sans header-item">
-      STARSBIT—{{ copyrightYear }}
-    </div>
-    <button (click)="toggleDarkmode()">
-      @if (!themeService.darkmode) {
-      <i class="material-icons header-item">dark_mode</i>
-      } @else {
-      <i class="material-icons header-item">light_mode</i>
-      }
-    </button>
-  </header>
+  <stars-header route="/"></stars-header>
 
   <main>
     <!-- Hero Section -->
@@ -54,7 +41,10 @@
       </h2>
 
       @for (post of posts; track $index) {
-      <stars-blog-post-card [post]="post" class="p-1"></stars-blog-post-card>
+      <stars-blog-post-card
+        [postData]="post"
+        class="p-1"
+      ></stars-blog-post-card>
       }
     </section>
 
@@ -64,8 +54,6 @@
     </section>
 
     <!-- Footer -->
-    <footer>
-      <stars-footer></stars-footer>
-    </footer>
+    <stars-footer></stars-footer>
   </main>
 </div>

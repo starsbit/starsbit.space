@@ -4,7 +4,7 @@
 >
   <!-- Thumbnail -->
   <img
-    [src]="post.image"
+    [src]="postData.thumbnail"
     alt="Post Thumbnail"
     class="w-32 h-40 object-cover rounded-l-lg md:h-32"
   />
@@ -15,11 +15,13 @@
       class="flex flex-col md:flex-row justify-between items-start md:items-center"
     >
       <!-- Title -->
-      <p class="text-lg font-bold font-sans mb-2 md:mb-0">{{ post.title }}</p>
+      <p class="text-lg font-bold font-sans mb-2 md:mb-0">
+        {{ postData.title }}
+      </p>
 
       <!-- Tags -->
       <div class="flex flex-wrap pt-2 pb-2 mb-2 md:mb-0">
-        @for (tag of post.tags; track $index) {
+        @for (tag of postData.tags; track $index) {
         <span
           class="text-xs bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full mr-2 mb-1 mt-1"
         >
@@ -30,13 +32,13 @@
     </div>
 
     <!-- Date -->
-    <p class="text-sm text-gray-500 mb-2 md:mb-0">{{ post.date | date }}</p>
+    <p class="text-sm text-gray-500 mb-2 md:mb-0">{{ postData.date | date }}</p>
 
     <!-- Description -->
     <p
       class="text-sm text-gray-500 md:mb-0 overflow-hidden truncate max-w-full"
     >
-      {{ post.description }}
+      {{ postData.description }}
     </p>
   </div>
 </div>
