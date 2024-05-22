@@ -17,6 +17,7 @@ import { Subscription } from 'rxjs';
 import { FooterComponent } from '../../../../components/footer/footer.component';
 import { HeaderComponent } from '../../../../components/header/header.component';
 import { SocialLinksComponent } from '../../../../components/social-links/social-links.component';
+import { SeoService } from '../../../../services/seo.service';
 import { ThemeService } from '../../../../services/theme.service';
 import { ProjectComponent } from '../project/project.component';
 
@@ -44,6 +45,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   constructor(
     public readonly themeService: ThemeService,
     private readonly cdr: ChangeDetectorRef,
+    private readonly seo: SeoService,
     @Inject(PLATFORM_ID) private readonly platformId: Object
   ) {}
 
@@ -52,6 +54,19 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       this.themeService.isDarkMode$.subscribe(() => {
         this.cdr.markForCheck();
       })
+    );
+
+    this.seo.updateTitle('starsbit - Home');
+    this.seo.updateDescription('The personal website of starsbit.');
+    this.seo.updateKeywords(
+      'starsbit, stars, portfolio, projects, blog, software development'
+    );
+    this.seo.updateAuthor('stars');
+    this.seo.updateOgUrl('https://starsbit.space');
+    this.seo.updateOgTitle('starsbit - Home');
+    this.seo.updateOgDescription('The personal website of starsbit.');
+    this.seo.updateOgImage(
+      'https://starsbit.space/assets/images/starsbit_logo_transparent_white.png'
     );
 
     if (!isPlatformBrowser(this.platformId)) {
