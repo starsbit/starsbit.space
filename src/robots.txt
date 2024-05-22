@@ -1,6 +1,5 @@
 User-agent: *
 Disallow: /admin/
-Disallow: /assets/
 Allow: /
 Allow: /sitemap.xml
 Allow: /blog/
