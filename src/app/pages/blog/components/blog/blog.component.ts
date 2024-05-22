@@ -106,7 +106,7 @@ export class BlogComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   private handleSeo() {
-    this.seo.updateTitle('starsbig - Blog');
+    this.seo.updateTitle('starsbit - Blog');
     this.seo.updateDescription(
       'Most recent posts from starsbit. Various topics are covered.'
     );
