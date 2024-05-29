@@ -3,7 +3,7 @@
 >
   <div
     class="copyright-header font-bold font-sans header-item"
-    [routerLink]="route ? [route] : null"
+    (click)="navigate()"
     [ngClass]="{ 'hover:underline cursor-pointer': route }"
   >
     STARSBIT—{{ copyrightYear }}

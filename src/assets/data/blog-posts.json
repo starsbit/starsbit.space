@@ -10,5 +10,17 @@
     "published": false,
     "file": "assets/data/blog-posts/test-blog-post.md",
     "author": "Test Author"
+  },
+  {
+    "title": "Load Resources Before the Page Is Displayed in Angular",
+    "description": "How to handle in Angular the loading of big resources before the page is displayed to the user",
+    "date": "2024-05-29",
+    "image": "assets/images/blog/load-resources-before-page-display-in-angular/image.webp",
+    "thumbnail": "assets/images/blog/load-resources-before-page-display-in-angular/thumbnail.png",
+    "tags": ["Programming", "Angular"],
+    "route": "load-resources-before-page-display-in-angular",
+    "published": false,
+    "file": "assets/data/blog-posts/load-resources-before-page-display-in-angular.md",
+    "author": "stars"
   }
 ]
