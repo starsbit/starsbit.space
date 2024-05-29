@@ -1,7 +1,7 @@
 @import "../../../../../styles/variables";
 
 .post {
-  max-width: $blog-content-siye;
+  max-width: $blog-content-size;
   margin-left: auto;
   margin-right: auto;
 }
@@ -69,6 +69,15 @@
   line-height: 2.25rem;
   margin-top: 2rem;
   margin-bottom: 2rem;
+}
+
+:host .post ::ng-deep pre {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background-color: $blog-code-bg;
+  border-radius: 0.5rem;
+  overflow-x: auto;
 }
 
 .page-padding {
