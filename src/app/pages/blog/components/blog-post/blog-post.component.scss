@@ -57,6 +57,20 @@
   margin-bottom: 2rem;
 }
 
+:host .post ::ng-deep h1 {
+  font-size: 2.25rem;
+  line-height: 2.75rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+:host .post ::ng-deep h2 {
+  font-size: 1.75rem;
+  line-height: 2.25rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
 .page-padding {
   padding-top: 6%;
   padding-bottom: 2%;
