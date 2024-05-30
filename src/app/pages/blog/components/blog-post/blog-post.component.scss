@@ -54,10 +54,13 @@ a {
 }
 
 :host .post ::ng-deep img {
+  display: block;
   max-width: 100%;
   height: auto;
   margin-top: 2rem;
   margin-bottom: 2rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 :host .post ::ng-deep h1 {
@@ -71,6 +74,14 @@ a {
 h2 {
   font-size: 1.75rem;
   line-height: 2.25rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+:host .post ::ng-deep h3,
+h3 {
+  font-size: 1.5rem;
+  line-height: 2rem;
   margin-top: 2rem;
   margin-bottom: 2rem;
 }

@@ -42,10 +42,23 @@
     "date": "30.05.2024",
     "image": "assets/images/blog/setting-up-math-and-code-expressions/image.png",
     "thumbnail": "assets/images/blog/setting-up-math-and-code-expressions/thumbnail.png",
-    "tags": ["Programming", "Angular", "Mathematics"],
+    "tags": ["Angular", "Mathematics"],
     "route": "setting-up-math-and-code-expressions",
     "published": true,
     "file": "assets/data/blog-posts/setting-up-math-and-code-expressions.md",
+    "author": "stars",
+    "sources": []
+  },
+  {
+    "title": "Communicating Sequential Processes in Communication Systems",
+    "description": "How to use CSP to discover attacks for communication systems.",
+    "date": "31.05.2024",
+    "image": "assets/images/blog/csp-in-communication-systems/image.png",
+    "thumbnail": "assets/images/blog/csp-in-communication-systems/thumbnail.jpg",
+    "tags": ["Programming", "Communication"],
+    "route": "csp-in-communication-systems",
+    "published": true,
+    "file": "assets/data/blog-posts/csp-in-communication-systems.md",
     "author": "stars",
     "sources": []
   }
