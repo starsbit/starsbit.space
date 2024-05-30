@@ -58,9 +58,16 @@ export class BlogComponent implements AfterViewInit, OnDestroy, OnInit {
     this.blogPostDataClientService.getBlogPostData().subscribe((data) => {
       this.posts = data.filter((post) => post.published);
 
+      // sort by date with the most recent first
+      console.log(this.posts);
+      this.posts.sort((a, b) => b.date.getTime() - a.date.getTime());
+
       this.allTags = Array.from(
         new Set(this.posts.flatMap((post) => post.tags))
       );
+
+      this.allTags.sort();
+
       this.selectedFilter = this.route.snapshot.queryParams['tag'];
 
       if (this.selectedFilter) {

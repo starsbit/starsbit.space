@@ -17,6 +17,11 @@ export class BlogPostDataClientService {
     }
     return this.http.get<PostData[]>('/assets/data/blog-posts.json').pipe(
       tap((data) => {
+        data.forEach((post) => {
+          const date = post.date as unknown as string;
+          const [day, month, year] = date.split('.');
+          post.date = new Date(Number(year), Number(month) - 1, Number(day));
+        });
         this.postData = data;
       })
     );

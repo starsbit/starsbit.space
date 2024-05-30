@@ -11,4 +11,5 @@ export const NOT_FOUND_BLOG_POST: PostData = {
   thumbnail: '/assets/images/banner.png',
   file: '/assets/data/blog-posts/not-found.md',
   author: 'stars',
+  sources: [],
 };

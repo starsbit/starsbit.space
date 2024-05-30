@@ -9,4 +9,10 @@ export interface PostData {
   published: boolean;
   file: string;
   author: string;
+  sources: PostSource[];
+}
+
+export interface PostSource {
+  title: string;
+  url: string;
 }

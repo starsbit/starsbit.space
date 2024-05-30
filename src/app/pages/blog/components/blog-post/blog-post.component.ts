@@ -1,4 +1,4 @@
-import { DatePipe, NgOptimizedImage } from '@angular/common';
+import { DatePipe, NgClass, NgOptimizedImage } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -18,6 +18,7 @@ import { PostData } from './post-data.model';
   selector: 'stars-blog-post',
   standalone: true,
   imports: [
+    NgClass,
     MarkdownModule,
     HeaderComponent,
     FooterComponent,

@@ -1,6 +1,7 @@
 @import "../../../../../styles/variables";
 
-.post {
+.post,
+.sources {
   max-width: $blog-content-size;
   margin-left: auto;
   margin-right: auto;
@@ -28,7 +29,8 @@
   border-color: $blog-light-bg;
 }
 
-:host .post ::ng-deep a {
+:host .post ::ng-deep a,
+a {
   text-decoration: underline dotted;
   color: $blog-dark-bg;
 
@@ -39,7 +41,8 @@
   }
 }
 
-:host :host-context(.dark) .post ::ng-deep a {
+:host :host-context(.dark) .post ::ng-deep a,
+:host-context(.dark) a {
   text-decoration: underline dotted;
   color: $blog-light-bg;
 
@@ -64,7 +67,8 @@
   margin-bottom: 2rem;
 }
 
-:host .post ::ng-deep h2 {
+:host .post ::ng-deep h2,
+h2 {
   font-size: 1.75rem;
   line-height: 2.25rem;
   margin-top: 2rem;
