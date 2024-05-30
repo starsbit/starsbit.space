@@ -11,6 +11,7 @@ import { FooterComponent } from '../../../../components/footer/footer.component'
 import { HeaderComponent } from '../../../../components/header/header.component';
 import { LoadingComponent } from '../../../../components/loading/loading.component';
 import { SocialLinksComponent } from '../../../../components/social-links/social-links.component';
+import { LoadingService } from '../../../../services/loading.service';
 import { SeoService } from '../../../../services/seo.service';
 import { PostData } from './post-data.model';
 
@@ -38,7 +39,8 @@ export class BlogPostComponent implements OnInit {
 
   constructor(
     private readonly router: Router,
-    private readonly seo: SeoService
+    private readonly seo: SeoService,
+    private readonly loadingService: LoadingService
   ) {}
 
   ngOnInit() {
@@ -53,6 +55,7 @@ export class BlogPostComponent implements OnInit {
   }
 
   onTagClick(tag: string) {
+    this.loadingService.start();
     this.router.navigate(['/blog'], { queryParams: { tag } });
   }
 }

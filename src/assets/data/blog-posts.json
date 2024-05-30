@@ -25,13 +25,28 @@
     "author": "stars",
     "sources": [
       {
+        "id": "image",
         "title": "KawaiiLogos",
         "url": "https://github.com/SAWARATSUKI/KawaiiLogos"
       },
       {
+        "id": "thumbnail",
         "title": "Anime Girls Holding Programming Books",
         "url": "https://github.com/cat-milk/Anime-Girls-Holding-Programming-Books"
       }
     ]
+  },
+  {
+    "title": "Setting Up Mathematical Expressions and Code Blocks in Ngx-Markdown",
+    "description": "How to setup mathematical expressions and code blocks in ngx-markdown.",
+    "date": "30.05.2024",
+    "image": "assets/images/blog/setting-up-math-and-code-expressions/image.png",
+    "thumbnail": "assets/images/blog/setting-up-math-and-code-expressions/thumbnail.png",
+    "tags": ["Programming", "Angular", "Mathematics"],
+    "route": "setting-up-math-and-code-expressions",
+    "published": true,
+    "file": "assets/data/blog-posts/setting-up-math-and-code-expressions.md",
+    "author": "stars",
+    "sources": []
   }
 ]

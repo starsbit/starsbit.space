@@ -13,6 +13,7 @@ export interface PostData {
 }
 
 export interface PostSource {
+  id: string;
   title: string;
   url: string;
 }
