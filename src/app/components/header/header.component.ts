@@ -14,6 +14,7 @@ import { ThemeService } from '../../services/theme.service';
 })
 export class HeaderComponent {
   @Input() route: string | null = null;
+  @Input() backIcon = false;
 
   copyrightYear = new Date().getFullYear();
 

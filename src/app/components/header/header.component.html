@@ -1,6 +1,11 @@
 <header
   class="header flex justify-between items-start dark:dark:text-white text-black text-2xl"
 >
+  @if (backIcon) {
+  <button (click)="navigate()">
+    <i class="material-icons header-item">arrow_back</i>
+  </button>
+  } @else {
   <div
     class="copyright-header font-bold font-sans header-item"
     (click)="navigate()"
@@ -8,6 +13,7 @@
   >
     STARSBIT—{{ copyrightYear }}
   </div>
+  }
 
   <button (click)="toggleDarkmode()">
     @if (!themeService.darkmode) {
