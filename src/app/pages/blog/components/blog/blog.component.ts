@@ -59,7 +59,6 @@ export class BlogComponent implements AfterViewInit, OnDestroy, OnInit {
       this.posts = data.filter((post) => post.published);
 
       // sort by date with the most recent first
-      console.log(this.posts);
       this.posts.sort((a, b) => b.date.getTime() - a.date.getTime());
 
       this.allTags = Array.from(
