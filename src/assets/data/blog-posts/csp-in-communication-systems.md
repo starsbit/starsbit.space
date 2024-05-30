@@ -358,3 +358,7 @@ This means that the after a runner finishes, a new runner starts. This is repeat
 ## Traces
 
 Traces are a way to represent the behavior of a system in CSP. A trace is a sequence of events that occur in a system. When two processes generate the same traces, they are considered equivalent. This is a useful concept because this way you can do verification of systems. They are also affected by the algebraic operations we have seen before.
+
+## Conclusion
+
+![MFW internal choice is a pain](assets/images/blog/csp-in-communication-systems/kuroko-anime.gif)
