@@ -44,7 +44,10 @@
         <span
           class="non-copyable text-lg dark:bg-gray-200 bg-gray-800 dark:text-gray-700 text-gray-300 px-4 py-2 mb-4 rounded-full leading-none align-middle transform transition-transform duration-300 hover:scale-105 cursor-pointer"
           (click)="filterPosts(tag)"
-          [ngClass]="{ 'bg-gray-600 dark:bg-gray-400': tag === selectedFilter }"
+          [ngClass]="{
+            '!bg-gray-400 !text-gray-700 !dark:bg-gray-400':
+              tag === selectedFilter
+          }"
         >
           {{ tag }}
         </span>
