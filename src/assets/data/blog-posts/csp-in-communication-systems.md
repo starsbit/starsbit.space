@@ -54,6 +54,9 @@ Primitive processes represent fundamental behaviors: examples include STOP (the 
 
 In the next section, we will look at advanced concepts in CSP and use a more mathematical approach to understand them.
 
+> [!WARNING]
+> I will not cover the algebraic operations laws here. We will not do any proofs or anything like that. We will just look at the concepts and how they can be used to model complex systems.
+
 ![Mathematics is hard](assets/images/blog/csp-in-communication-systems/sg-maths.jpg)
 
 It may suck a little that we have to go into maths but it will be worth it.
@@ -129,9 +132,9 @@ int main() {
 
 This code can be treated as a deterministic choice in CSP. The system can either produce a number or consume a number depending on the value of `a` or `b`. So the environment has an influence on the choice made by the process.
 
-This can be represented in CSP as:
+This can be represented in CSP as
 
-$a \rightarrow P \square b \rightarrow Q$
+> $a \rightarrow P \square b \rightarrow Q$
 
 Or as a tree:
 
@@ -139,16 +142,13 @@ Or as a tree:
 
 We can extend the previous example to have the choice to stop after sending `c` messages to the channel.
 
----
-$P(n, c) =$
-
-$(c > 0) \And \text{produce(n)}$
-
-$\rightarrow \text{ch}!n$
-
-$\rightarrow(c > 0 \And P(n+1,c-1)) \square (c == 0 \And \text{STOP})$
-
----
+> $P(n, c) =$
+>
+> $(c > 0) \And \text{produce(n)}$
+>
+> $\rightarrow \text{ch}!n$
+>
+> $\rightarrow(c > 0 \And P(n+1,c-1)) \square (c == 0 \And \text{STOP})$
 
 Lets break this down:
 
@@ -173,12 +173,188 @@ else:
 
 This python code can be translated to a CSP process like this since we dont know the value of the internal variable `x` at runtime:
 
-$P \sqcap Q$
+> $P \sqcap Q$
 
 Or as a tree:
 
 ![Non deterministic choice](assets/images/blog/csp-in-communication-systems/non-d-choice.png)
 
+Lastly there is the **conditional choice** denoted by $\lhd \text{boolean} \rhd$. This choice is quiet different from the previous two. It allows a process to make a choice between different actions, depending on some condition. This is a powerful concept in CSP, as it allows a process to make decisions based on the state of the system.
+
+This choice combined with the previous two can be used to model complex systems where different actions are possible depending on the state of the system. Lets imagine the following example:
+
+![Chessboard](assets/images/blog/csp-in-communication-systems/chessboard.svg)
+
+Lets say you want to model every possible movement of a king on a chessboard. You can use conditional choice to model this. The king in chess can move in any direction but only one step at a time. With a approach using no choices, you would have to model every possible movement of the king. This means:
+
+> $\text{For } 0<x, y<7:$
+>
+> $C(x,y) = up \rightarrow C(x,y+1)$
+>
+> $| down \rightarrow C(x,y-1)$
+>
+> $| left \rightarrow C(x-1,y)$
+>
+> $| right \rightarrow C(x+1,y)$
+
+This only models the movement for one case and still misses:
+
+> $x = y = 0$
+>
+> $x = 0, y = 8$
+>
+> $x = 8, y = 0$
+>
+> $x = 8, y = 8$
+>
+> $x = 0, 0 < y < 7$
+>
+> ...
+
+This is a lot of work and not very efficient. With conditional choice you can model this in a more efficient way:
+
+> $C(x,y) = up \rightarrow C(x,y+1) \lhd y < 7 \rhd \text{STOP}$
+>
+> $\square down \rightarrow C(x,y-1) \lhd y > 0 \rhd \text{STOP}$
+>
+> $\square left \rightarrow C(x-1,y) \lhd x > 0 \rhd \text{STOP}$
+>
+> $\square right \rightarrow C(x+1,y) \lhd x < 7 \rhd \text{STOP}$
+
+This models the movement of the king in a more efficient way. The conditional choice allows to terminate the process if the condition is not met and choose the correct action based on the condition. As you can see, the action taken is based on an event. So when the up event is taken, $C(x,y+1) \lhd y < 7 \rhd \text{STOP}$ is executed. Then in here the conditional choice is made. If $y$ is less than 7, the process stops. If $y$ is greater than 7, the process continues and calls itself recursively.
+
+This is a simple example of how conditional choice can be used to model complex systems in coorperation with the other choices.
+
 I was lying when I said this was simple, but I hope you get the idea. We will look at more advanced concepts in CSP in the next section.
 
 ![MFW internal choice is a pain](assets/images/blog/csp-in-communication-systems/kuroko-anime.gif)
+
+### Interleaving
+
+Interleaving is another powerful concept in CSP. It allows to model the concurrent execution of multiple processes where the order of execution is not fixed. This means the orders of any process can occur in any order.
+
+This can be represented in CSP as:
+
+> $P ||| Q$
+
+Those mathematical definitions are a bit hard to understand so lets look at an example. Lets say you want to create a fax machine. First we can create a process that roughly describes the fax:
+
+> $\text{FAX} = \text{accept}?d : \text{DOCUMENT} \rightarrow \text{print}!d \rightarrow FAX$
+
+This process listens to the channel `accept` for a document `d`. When it receives a document, it prints the document and then listens for the next document.
+
+Now imagine you want to have multiple fax machines connected to the same telephone line. For this you can use interleaving:
+
+> $(\text{FAXES} = \text{FAX1} ||| \text{FAX2}) ||| (\text{FAX3} ||| \text{FAX4})$
+
+The system `FAXES` can now accept four faxes before printing them now.
+
+### Generalised Parallel Composition
+
+Sometimes you have processes and want to synchronize some events between them. This can be done with generalised parallel composition. This is a powerful concept in CSP.
+
+This can be represented in CSP as:
+
+> $P [|X|] Q$
+
+Here $X$ is a set of events that are synchronized between $P$ and $Q$.
+
+Imagine a really simple example here that gets the point accross perfectly. You need to model a race between multiple runners.
+
+![Race](assets/images/blog/csp-in-communication-systems/race.gif)
+
+First we can model a single runner that starts the race and finishes it:
+
+> $\text{RUNNER} = \text{start} \rightarrow \text{finish} \rightarrow \text{STOP}$
+
+They both have to start at the same time but they can finish at different times. This can be represented in CSP with generalised parallel composition:
+
+> $\text{RACE} = \text{RUNNER} [| \text{start} |] \text{RUNNER}$
+
+### Relabelling
+
+Relabelling is like the name suggest a way to rename events in CSP. This can be useful when you want to model a system but the events name change.
+
+We have our runner from the previous example.
+
+> $\text{RUNNER} = \text{start} \rightarrow \text{finish} \rightarrow \text{STOP}$
+
+The universe was previously $\Sigma = \{\text{start}, \text{finish}\}$.
+
+![Depressed runner](assets/images/blog/csp-in-communication-systems/sad-uma.gif)
+
+The RUNNER has changed, he is now depressed and does not want to run anymore. Lets rename the events:
+
+The new universe is $\Sigma' = \{\text{cry}, \text{sleep}\}$.
+
+We can define a relabeling function $f$ that maps the old events to the new events:
+
+> $f(\text{start}) = \text{cry}$
+> $f(\text{finish}) = \text{sleep}$
+
+Now we can relabel the RUNNER process:
+
+> $\text{RUNNER'} = \text{cry} \rightarrow \text{sleep} \rightarrow \text{STOP}$
+
+This is a finally a really easy concept to understand, right? This is the case when the universe have the same number of events. In the case there are more events in the new universe, things get a bit more complicated.
+
+Let's consider a scenario where the runner has more complex behaviors, and the new universe includes additional events. Suppose the new universe is:
+
+> $\Sigma' = {\text{cry}, \text{sleep}, \text{rest}, \text{eat}}$
+
+Then we create a relabeling function $f$ that maps the old events to the new events:
+
+> $f(\text{start}) = \text{cry}$
+> $f(\text{finish}) = \text{sleep}$
+> $f(\text{start}) = \text{rest}$
+> $f(\text{finish}) = \text{eat}$
+
+Now we can relabel the RUNNER process:
+
+> $\text{RUNNER'} = (\text{cry} | \text{rest}) \rightarrow (\text{rest} | \text{eat}) \rightarrow \text{STOP}$
+
+I hope you get the idea.
+
+### Hiding
+
+Hiding allows to hide events in CSP. This can be useful when you want to model a system but some events are not visible to the outside world.
+
+Imagine you have a noisy vending machine.
+
+> $\text{VENDING} = \text{coin} \rightarrow \text{noise} \rightarrow \text{drink} \rightarrow \text{VENDING}$
+
+You want to model the vending machine but you do not want to show the noise it makes when it dispenses a drink. You can hide the noise event.
+
+> $\text{VENDING} \\ \{\text{noise}\} = \mu X.\text{coin} \rightarrow \text{drink} \rightarrow X$
+
+Hiding is useful to hide components of a system that are not relevant to the outside world.
+
+### Piping
+
+This is a really short one. Piping is just to model processes that have an input and an output channel.
+
+> $\text{P} >> \text{Q} = (P[x/text{out}] [|c|] Q[c/\text{in}]) \ c$, where $c$ is a new channel.
+
+### Sequential Composition
+
+Sequential composition is a way to model processes that have to be executed in a specific order. This can be useful when you want to model a system where the order of execution is important.
+
+![Relay Race](assets/images/blog/csp-in-communication-systems/relay-race.webp)
+
+Lets say you have relay race. So runner 1 has to *terminate* before runner 2 can *start*. As a reminder, the runner process is:
+
+> $\text{RUNNER} = \text{start} \rightarrow \text{finish} \rightarrow \text{STOP}$
+
+Now we can model a relay race:
+
+> $\text{RELAY} = \text{RUNNER} ; \text{RUNNER}$
+
+This means that the first runner has to finish before the second runner can start. If the first runner does not finish, the second runner will never start. If you want to model relay race hell itself, you can do this:
+
+> $\text{RELAY} = \text{RUNNER}*$
+
+This means that the after a runner finishes, a new runner starts. This is repeated **indefinitely**.
+
+## Traces
+
+Traces are a way to represent the behavior of a system in CSP. A trace is a sequence of events that occur in a system. When two processes generate the same traces, they are considered equivalent. This is a useful concept because this way you can do verification of systems. They are also affected by the algebraic operations we have seen before.

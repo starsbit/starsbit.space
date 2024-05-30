@@ -96,6 +96,25 @@ h3 {
   overflow-x: auto;
 }
 
+:host .post ::ng-deep blockquote {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background-color: $blog-light-blockquote-bg;
+  border-left: 0.25rem solid $blog-light-blockquote-border;
+  border-radius: 0.5rem;
+
+  // last p child has no margin
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+:host :host-context(.dark) .post ::ng-deep blockquote {
+  background-color: $blog-dark-blockquote-bg;
+  border-left: 0.25rem solid $blog-dark-blockquote-border;
+}
+
 .page-padding {
   padding-top: 6%;
   padding-bottom: 2%;
