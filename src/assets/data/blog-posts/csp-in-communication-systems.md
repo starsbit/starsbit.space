@@ -365,7 +365,7 @@ Traces are a way to represent the behavior of a system in CSP. A trace is a sequ
 
 A possible trace of the `RELAY` system we have seen before is:
 
-> $\lbrace\text{start}, \text{finish}, \text{start}, \text{finish} \rbrace$
+> $\lbrace < \text{start}, \text{finish}, \text{start}, \text{finish} > \rbrace$
 
 This is a simple example of how traces can be used to represent the behavior of a system in CSP. Since CSP is about parallel processes, traces can be used to represent the behavior of multiple processes running in parallel. There are multiple possible traces for a system, depending on the order of execution of the processes.
 
