@@ -2,17 +2,17 @@
   class="header flex justify-between items-start dark:dark:text-white text-black text-2xl"
 >
   @if (backIcon) {
-  <button [routerLink]="this.route || '/'">
+  <a [routerLink]="this.route || '/'">
     <i class="material-icons header-item">arrow_back</i>
-  </button>
+  </a>
   } @else {
-  <div
+  <a
     class="copyright-header font-bold font-sans header-item"
     [routerLink]="this.route || '/'"
     [ngClass]="{ 'hover:underline cursor-pointer': route }"
   >
     STARSBIT—{{ copyrightYear }}
-  </div>
+  </a>
   }
 
   <button (click)="toggleDarkmode()">

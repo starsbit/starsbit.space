@@ -5,7 +5,7 @@ import {
   Input,
   OnInit,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { MarkdownModule } from 'ngx-markdown';
 import { FooterComponent } from '../../../../components/footer/footer.component';
 import { HeaderComponent } from '../../../../components/header/header.component';
@@ -19,6 +19,7 @@ import { PostData } from './post-data.model';
   standalone: true,
   imports: [
     NgClass,
+    RouterLink,
     MarkdownModule,
     HeaderComponent,
     FooterComponent,
@@ -36,10 +37,7 @@ export class BlogPostComponent implements OnInit {
 
   markdownRendered = false;
 
-  constructor(
-    private readonly router: Router,
-    private readonly seo: SeoService
-  ) {}
+  constructor(private readonly seo: SeoService) {}
 
   ngOnInit() {
     this.seo.updateTitle(this.postData.title);
@@ -50,9 +48,5 @@ export class BlogPostComponent implements OnInit {
     this.seo.updateOgTitle(this.postData.title);
     this.seo.updateOgDescription(this.postData.description);
     this.seo.updateOgImage(`https://starsbit.space/${this.postData.thumbnail}`);
-  }
-
-  onTagClick(tag: string) {
-    this.router.navigate(['/blog'], { queryParams: { tag } });
   }
 }

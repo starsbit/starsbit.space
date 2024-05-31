@@ -28,26 +28,27 @@
   </div>
   } @else if (route) {
   <div class="group">
-    <img
-      [src]="thumbnail"
-      alt="Primary Image"
-      class="w-full h-auto object-cover transition duration-500 ease-in-out transform group-hover:translate-x-full cursor-pointer"
-      [routerLink]="route"
-    />
-    <img
-      [src]="thumbnailSecond"
-      alt="Secondary Image"
-      class="absolute inset-0 w-full h-auto object-cover transition duration-500 ease-in-out transform -translate-x-full group-hover:translate-x-0 cursor-pointer"
-      [routerLink]="route"
-    />
+    <a [routerLink]="route">
+      <img
+        [src]="thumbnail"
+        alt="Primary Image"
+        class="w-full h-auto object-cover transition duration-500 ease-in-out transform group-hover:translate-x-full cursor-pointer"
+      />
+      <img
+        [src]="thumbnailSecond"
+        alt="Secondary Image"
+        class="absolute inset-0 w-full h-auto object-cover transition duration-500 ease-in-out transform -translate-x-full group-hover:translate-x-0 cursor-pointer"
+      />
+    </a>
   </div>
   <div class="p-4">
-    <h2
-      class="text-lg font-semibold dark:text-white text-black hover:underline cursor-pointer"
-      [routerLink]="route"
-    >
-      {{ title }}
-    </h2>
+    <a [routerLink]="route">
+      <h2
+        class="text-lg font-semibold dark:text-white text-black hover:underline cursor-pointer"
+      >
+        {{ title }}
+      </h2>
+    </a>
     <p class="text-sm dark:text-gray-300">{{ description }}</p>
   </div>
   }
