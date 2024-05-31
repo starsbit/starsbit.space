@@ -142,13 +142,13 @@ Or as a tree:
 
 We can extend the previous example to have the choice to stop after sending `c` messages to the channel.
 
-> $P(n, c) =$
+> $P(n, c) = \newline$
 >
-> $(c > 0) \And \text{produce(n)}$
+> $(c > 0) \And \text{produce(n)} \newline$
 >
-> $\rightarrow \text{ch}!n$
+> $\rightarrow \text{ch}!n \newline$
 >
-> $\rightarrow(c > 0 \And P(n+1,c-1)) \square (c == 0 \And \text{STOP})$
+> $\rightarrow(c > 0 \And P(n+1,c-1)) \square (c == 0 \And \text{STOP}) \newline$
 
 Lets break this down:
 
@@ -187,39 +187,39 @@ This choice combined with the previous two can be used to model complex systems 
 
 Lets say you want to model every possible movement of a king on a chessboard. You can use conditional choice to model this. The king in chess can move in any direction but only one step at a time. With a approach using no choices, you would have to model every possible movement of the king. This means:
 
-> $\text{For } 0<x, y<7:$
+> $\text{For } 0<x, y<7: \newline$
 >
-> $C(x,y) = up \rightarrow C(x,y+1)$
+> $C(x,y) = up \rightarrow C(x,y+1) \newline$
 >
-> $| down \rightarrow C(x,y-1)$
+> $| down \rightarrow C(x,y-1) \newline$
 >
-> $| left \rightarrow C(x-1,y)$
+> $| left \rightarrow C(x-1,y) \newline$
 >
-> $| right \rightarrow C(x+1,y)$
+> $| right \rightarrow C(x+1,y) \newline$
 
 This only models the movement for one case and still misses:
 
-> $x = y = 0$
+> $x = y = 0 \newline$
 >
-> $x = 0, y = 8$
+> $x = 0, y = 8 \newline$
 >
-> $x = 8, y = 0$
+> $x = 8, y = 0 \newline$
 >
-> $x = 8, y = 8$
+> $x = 8, y = 8 \newline$
 >
-> $x = 0, 0 < y < 7$
+> $x = 0, 0 < y < 7 \newline$
 >
 > ...
 
 This is a lot of work and not very efficient. With conditional choice you can model this in a more efficient way:
 
-> $C(x,y) = up \rightarrow C(x,y+1) \lhd y < 7 \rhd \text{STOP}$
+> $C(x,y) = up \rightarrow C(x,y+1) \lhd y < 7 \rhd \text{STOP} \newline$
 >
-> $\square down \rightarrow C(x,y-1) \lhd y > 0 \rhd \text{STOP}$
+> $\square down \rightarrow C(x,y-1) \lhd y > 0 \rhd \text{STOP} \newline$
 >
-> $\square left \rightarrow C(x-1,y) \lhd x > 0 \rhd \text{STOP}$
+> $\square left \rightarrow C(x-1,y) \lhd x > 0 \rhd \text{STOP} \newline$
 >
-> $\square right \rightarrow C(x+1,y) \lhd x < 7 \rhd \text{STOP}$
+> $\square right \rightarrow C(x+1,y) \lhd x < 7 \rhd \text{STOP} \newline$
 
 This models the movement of the king in a more efficient way. The conditional choice allows to terminate the process if the condition is not met and choose the correct action based on the condition. As you can see, the action taken is based on an event. So when the up event is taken, $C(x,y+1) \lhd y < 7 \rhd \text{STOP}$ is executed. Then in here the conditional choice is made. If $y$ is less than 7, the process stops. If $y$ is greater than 7, the process continues and calls itself recursively.
 
@@ -289,7 +289,8 @@ The new universe is $\Sigma' = \{\text{cry}, \text{sleep}\}$.
 
 We can define a relabeling function $f$ that maps the old events to the new events:
 
-> $f(\text{start}) = \text{cry}$
+> $f(\text{start}) = \text{cry} \newline$
+>
 > $f(\text{finish}) = \text{sleep}$
 
 Now we can relabel the RUNNER process:
@@ -304,9 +305,12 @@ Let's consider a scenario where the runner has more complex behaviors, and the n
 
 Then we create a relabeling function $f$ that maps the old events to the new events:
 
-> $f(\text{start}) = \text{cry}$
-> $f(\text{finish}) = \text{sleep}$
-> $f(\text{start}) = \text{rest}$
+> $f(\text{start}) = \text{cry} \newline$
+>
+> $f(\text{finish}) = \text{sleep} \newline$
+>
+> $f(\text{start}) = \text{rest} \newline$
+>
 > $f(\text{finish}) = \text{eat}$
 
 Now we can relabel the RUNNER process:
@@ -325,7 +329,7 @@ Imagine you have a noisy vending machine.
 
 You want to model the vending machine but you do not want to show the noise it makes when it dispenses a drink. You can hide the noise event.
 
-> $\text{VENDING} \\ \{\text{noise}\} = \mu X.\text{coin} \rightarrow \text{drink} \rightarrow X$
+> $\text{VENDING} \setminus \lbrace \text{noise} \rbrace = \mu X.\text{coin} \rightarrow \text{drink} \rightarrow X$
 
 Hiding is useful to hide components of a system that are not relevant to the outside world.
 
@@ -333,7 +337,7 @@ Hiding is useful to hide components of a system that are not relevant to the out
 
 This is a really short one. Piping is just to model processes that have an input and an output channel.
 
-> $\text{P} >> \text{Q} = (P[x/text{out}] [|c|] Q[c/\text{in}]) \ c$, where $c$ is a new channel.
+> $\text{P} >> \text{Q} = (P[x / \text{out}] [|c|] Q[c / \text{in}]) \setminus c$, where $c$ is a new channel.
 
 ### Sequential Composition
 
@@ -358,6 +362,34 @@ This means that the after a runner finishes, a new runner starts. This is repeat
 ## Traces
 
 Traces are a way to represent the behavior of a system in CSP. A trace is a sequence of events that occur in a system. When two processes generate the same traces, they are considered equivalent. This is a useful concept because this way you can do verification of systems. They are also affected by the algebraic operations we have seen before.
+
+A possible trace of the `RELAY` system we have seen before is:
+
+> $\lbrace\text{start}, \text{finish}, \text{start}, \text{finish} \rbrace$
+
+This is a simple example of how traces can be used to represent the behavior of a system in CSP. Since CSP is about parallel processes, traces can be used to represent the behavior of multiple processes running in parallel. There are multiple possible traces for a system, depending on the order of execution of the processes.
+
+> $traces(a \rightarrow b \rightarrow STOP) = \lbrace <>, <\text{a}>, <\text{a}, \text{b}> \rbrace \newline$
+>
+> $traces(a \rightarrow STOP \square b \rightarrow STOP) = \lbrace <>, <\text{a}>, <\text{b}> \rbrace$
+
+From the second trace you can see that $traces(P \square Q) = traces(P) \cup traces(Q)$. This is not the only denotation that be used to represent traces. There are several other operations that can be done with traces. I will leave this to you to explore for now. Traces play a big role in the verification of systems. This can be used in model checking to verify the correctness of a system. Traces are not a concept that is unique to CSP. They are used in other formal methods as well, looking at *Labelled transition systems (LTS)*. In LTS traces are used to express equivalence between systems. This is not the only kind of equivalence used in LTS but it is a common one.
+
+Understanding traces and its limits is important. While I dont want to go deep into the algebra of traces I want to motivate where trace equivalence does not describe the same system:
+
+![Trace Equivalent Systems](assets/images/blog/csp-in-communication-systems/trace-eq.png)
+
+The two systems try to describe a system in which a person opens a door and then either wins a prize behind the door or loses and gets nothing.
+
+Lets look at them as a CSP process:
+
+> $P_{left} = (\text{opendoor} \rightarrow \text{win} \rightarrow STOP) \sqcap  (\text{opendoor} \rightarrow \text{lose} \rightarrow STOP) \newline$
+>
+> $P_{right} = \text{opendoor} \rightarrow (\text{win} \rightarrow STOP \square \text{lose} \rightarrow STOP)$
+
+The two systems are trace equivalent. They both produce the traces $\lbrace <\text{opendoor}, \text{win}>, <\text{opendoor}, \text{lose}> \rbrace$ But they are not equivalent. The left system is correct game. After choosing a door, the decision is locked in and the prize is revealed. The right system rather describes a game where the person opens the door and then can decide if they want to win or lose. So both systems do quite different things. This is a limitation of trace equivalence.
+
+You will still see traces used in verification of systems. Sometimes strict equivalence is not needed and traces are enough to verify the correctness of a system.
 
 ## Conclusion
 
