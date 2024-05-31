@@ -7,7 +7,10 @@
   <section class="hero">
     <div class="pt-16 pb-16">
       <img
-        [src]="postData.image"
+        [ngSrc]="postData.image"
+        priority
+        width="1920"
+        height="256"
         alt="starsbit header banner"
         class="banner object-cover w-full h-64 mx-auto relative rounded-2xl shadow-2xl"
       />
