@@ -41,7 +41,6 @@ export class GoogleAnalyticsTagComponent {
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', '${this.trackingCode}');
     `;
     this.renderer.appendChild(script2, this.renderer.createText(script2Body));
