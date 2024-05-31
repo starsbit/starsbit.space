@@ -245,7 +245,7 @@ This process listens to the channel `accept` for a document `d`. When it receive
 
 Now imagine you want to have multiple fax machines connected to the same telephone line. For this you can use interleaving:
 
-> $(\text{FAXES} = \text{FAX1} ||| \text{FAX2}) ||| (\text{FAX3} ||| \text{FAX4})$
+> $\text{FAXES} = (\text{FAX1} ||| \text{FAX2}) ||| (\text{FAX3} ||| \text{FAX4})$
 
 The system `FAXES` can now accept four faxes before printing them now.
 

@@ -1,13 +1,12 @@
 import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Router } from '@angular/router';
-import { LoadingService } from '../../services/loading.service';
+import { RouterLink } from '@angular/router';
 import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'stars-header',
   standalone: true,
-  imports: [NgClass],
+  imports: [NgClass, RouterLink],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -18,11 +17,7 @@ export class HeaderComponent {
 
   copyrightYear = new Date().getFullYear();
 
-  constructor(
-    public themeService: ThemeService,
-    private readonly router: Router,
-    private readonly loadingService: LoadingService
-  ) {}
+  constructor(public themeService: ThemeService) {}
 
   get imageSource() {
     return this.themeService.darkmode
@@ -32,10 +27,5 @@ export class HeaderComponent {
 
   toggleDarkmode() {
     this.themeService.darkmode = !this.themeService.darkmode;
-  }
-
-  navigate() {
-    this.loadingService.start();
-    this.router.navigate([this.route || '/']);
   }
 }

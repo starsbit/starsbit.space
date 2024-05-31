@@ -140,3 +140,58 @@ The new Angular feature `@defer` is a powerful tool for loading resources before
 However, this solution comes with trade-offs. The `LoadingService` requires maintenance, and the use of the `@defer` keyword in templates can make the code more complex and harder to maintain. Despite these challenges, the benefits of preloading resources—such as improved user experience and seamless animations—can outweigh the downsides. For this website, no other solution has effectively resolved the animation issue.
 
 I will update this post if I find a better solution in the future. If you have any suggestions or questions, feel free to reach out to me on [Twitter](https://x.com/starsbit1).
+
+## Update 31.05.2024
+
+I found a better solution for the problem I described in this post. Instead of adding the `ngOnInit` function to every component and adding there the `this.loadingService.stop();` call, I added all the logic to the loading service, which is provided in `root`.
+
+```typescript
+import { Injectable } from '@angular/core';
+import { NavigationEnd, NavigationStart, Router } from '@angular/router';
+import { BehaviorSubject, filter, Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class LoadingService {
+  private callCount = 0;
+  private readonly loadingSubject = new BehaviorSubject<boolean>(false);
+
+  constructor(private readonly router: Router) {
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.stop();
+      });
+
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationStart))
+      .subscribe(() => {
+        this.start();
+      });
+  }
+
+  start() {
+    this.callCount++;
+    this.loadingSubject.next(true);
+  }
+
+  stop() {
+    this.callCount--;
+    if (this.callCount <= 0) {
+      this.callCount = 0;
+      this.loadingSubject.next(false);
+    }
+  }
+
+  isLoading(): Observable<boolean> {
+    return this.loadingSubject.asObservable();
+  }
+
+  isLoadingSnapshot(): boolean {
+    return this.loadingSubject.value;
+  }
+}
+```
+
+I hope this helps!!

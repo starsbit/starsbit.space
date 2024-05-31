@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LoadingComponent } from '../../components/loading/loading.component';
 import { LoadingService } from '../../services/loading.service';
 import { BlogComponent } from './components/blog/blog.component';
@@ -12,10 +12,6 @@ import { BlogComponent } from './components/blog/blog.component';
   styleUrl: './defered-blog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DeferedBlogComponent implements OnInit {
+export class DeferedBlogComponent {
   constructor(public readonly loadingService: LoadingService) {}
-
-  ngOnInit() {
-    this.loadingService.stop();
-  }
 }

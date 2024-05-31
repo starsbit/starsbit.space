@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoadingComponent } from '../../../../components/loading/loading.component';
 import { NOT_FOUND_BLOG_POST } from '../../../../constants/not-found-blog-post';
@@ -16,7 +16,7 @@ import { PostData } from '../blog-post/post-data.model';
   styleUrl: './defered-blog-post.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DeferedBlogPostComponent implements OnInit {
+export class DeferedBlogPostComponent {
   post: PostData;
 
   constructor(
@@ -36,9 +36,5 @@ export class DeferedBlogPostComponent implements OnInit {
         this.post = NOT_FOUND_BLOG_POST;
       }
     });
-  }
-
-  ngOnInit() {
-    this.loadingService.stop();
   }
 }

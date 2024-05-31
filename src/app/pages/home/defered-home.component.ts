@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LoadingComponent } from '../../components/loading/loading.component';
 import { LoadingService } from '../../services/loading.service';
 import { HomeComponent } from './components/home/home.component';
@@ -12,10 +12,6 @@ import { HomeComponent } from './components/home/home.component';
   styleUrl: './defered-home.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DeferedHomeComponent implements OnInit {
+export class DeferedHomeComponent {
   constructor(public readonly loadingService: LoadingService) {}
-
-  ngOnInit() {
-    this.loadingService.stop();
-  }
 }
