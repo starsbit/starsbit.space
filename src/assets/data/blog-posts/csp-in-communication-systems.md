@@ -294,7 +294,7 @@ We can define a relabeling function $f$ that maps the old events to the new even
 
 Now we can relabel the RUNNER process:
 
-> $\text{RUNNER'} = \text{cry} \rightarrow \text{sleep} \rightarrow \text{STOP}$
+> $\text{RUNNER}_f = \text{cry} \rightarrow \text{sleep} \rightarrow \text{STOP}$
 
 This is a finally a really easy concept to understand, right? This is the case when the universe have the same number of events. In the case there are more events in the new universe, things get a bit more complicated.
 
@@ -311,7 +311,7 @@ Then we create a relabeling function $f$ that maps the old events to the new eve
 
 Now we can relabel the RUNNER process:
 
-> $\text{RUNNER'} = (\text{cry} | \text{rest}) \rightarrow (\text{rest} | \text{eat}) \rightarrow \text{STOP}$
+> $\text{RUNNER}_f = (\text{cry} | \text{rest}) \rightarrow (\text{rest} | \text{eat}) \rightarrow \text{STOP}$
 
 I hope you get the idea.
 
