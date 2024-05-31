@@ -221,7 +221,7 @@ This is a lot of work and not very efficient. With conditional choice you can mo
 >
 > $\square right \rightarrow C(x+1,y) \lhd x < 7 \rhd \text{STOP} \newline$
 
-This models the movement of the king in a more efficient way. The conditional choice allows to terminate the process if the condition is not met and choose the correct action based on the condition. As you can see, the action taken is based on an event. So when the up event is taken, $C(x,y+1) \lhd y < 7 \rhd \text{STOP}$ is executed. Then in here the conditional choice is made. If $y$ is less than 7, the process stops. If $y$ is greater than 7, the process continues and calls itself recursively.
+This models the movement of the king in a more efficient way. The conditional choice allows to terminate the process if the condition is not met and choose the correct action based on the condition. As you can see, the action taken is based on an event. So when the up event is taken, $C(x,y+1) \lhd y < 7 \rhd \text{STOP}$ is executed. Then in here the conditional choice is made. If $y$ is greater than 7, the process stops. If $y$ is less than 7, the process continues and calls itself recursively.
 
 This is a simple example of how conditional choice can be used to model complex systems in coorperation with the other choices.
 
@@ -315,7 +315,15 @@ Then we create a relabeling function $f$ that maps the old events to the new eve
 
 Now we can relabel the RUNNER process:
 
-> $\text{RUNNER}_f = (\text{cry} | \text{rest}) \rightarrow (\text{rest} | \text{eat}) \rightarrow \text{STOP}$
+> $\text{RUNNER}_f = \newline$
+>
+> $\text{cry} \rightarrow \text{sleep} \rightarrow \text{STOP} \newline$
+>
+> $| \text{cry} \rightarrow \text{eat} \rightarrow \text{STOP} \newline$
+>
+> $| \text{rest} \rightarrow \text{sleep} \rightarrow \text{STOP} \newline$
+>
+> $| \text{rest} \rightarrow \text{eat} \rightarrow \text{STOP}$
 
 I hope you get the idea.
 
