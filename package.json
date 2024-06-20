@@ -9,7 +9,7 @@
     "test": "ng test",
     "serve:ssr:starsbit": "node dist/starsbit/server/server.mjs",
     "process": "node ./tools/copy-files.mjs && node ./tools/alter-polyfills.mjs",
-    "deploy": "npm run build --omit=dev && wrangler pages deploy dist/cloudflare"
+    "deploy": "npm run build --omit=dev && wrangler pages deploy dist/cloudflare --project-name starsbit"
   },
   "private": true,
   "dependencies": {
