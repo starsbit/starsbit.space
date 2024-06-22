@@ -12,4 +12,5 @@ export const NOT_FOUND_BLOG_POST: PostData = {
   file: '/assets/data/blog-posts/not-found.md',
   author: 'stars',
   sources: [],
+  noOutline: true,
 };

@@ -1,0 +1,11 @@
+<!-- post-outline.component.html -->
+<h2>Outline</h2>
+<ul class="post-outline">
+  @for (heading of headings; track $index) {
+  <li [ngClass]="heading.tagName.toLowerCase()">
+    <a [routerLink]="[]" [fragment]="heading.id">
+      {{ heading.text }}
+    </a>
+  </li>
+  }
+</ul>

@@ -61,5 +61,18 @@
     "file": "assets/data/blog-posts/csp-in-communication-systems.md",
     "author": "stars",
     "sources": []
+  },
+  {
+    "title": "Deploy a Website for Free to Cloudflare Pages",
+    "description": "How to host and deploy a website for free with Cloudflare Pages.",
+    "date": "22.06.2024",
+    "image": "assets/images/blog/host-static-website-for-free-on-cloudflare/image.png",
+    "thumbnail": "assets/images/blog/host-static-website-for-free-on-cloudflare/thumbnail.png",
+    "tags": ["Programming"],
+    "route": "host-static-website-for-free-on-cloudflare",
+    "published": true,
+    "file": "assets/data/blog-posts/host-static-website-for-free-on-cloudflare.md",
+    "author": "stars",
+    "sources": []
   }
 ]
