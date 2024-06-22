@@ -12,7 +12,6 @@ import { Subscription } from 'rxjs';
 import { FooterComponent } from '../../../../components/footer/footer.component';
 import { HeaderComponent } from '../../../../components/header/header.component';
 import { SocialLinksComponent } from '../../../../components/social-links/social-links.component';
-import { SeoService } from '../../../../services/seo.service';
 import { ThemeService } from '../../../../services/theme.service';
 import { BlogPostDataClientService } from '../../../../services/web/blog-post-data-client.service';
 import { BlogPostCardComponent } from '../blog-post-card/blog-post-card.component';
@@ -49,12 +48,10 @@ export class BlogComponent implements AfterViewInit, OnDestroy, OnInit {
     private readonly cdr: ChangeDetectorRef,
     private readonly blogPostDataClientService: BlogPostDataClientService,
     private readonly router: Router,
-    private readonly route: ActivatedRoute,
-    private readonly seo: SeoService
+    private readonly route: ActivatedRoute
   ) {}
 
   ngOnInit() {
-    this.handleSeo();
     this.blogPostDataClientService.getBlogPostData().subscribe((data) => {
       this.posts = data.filter((post) => post.published);
 
@@ -109,20 +106,5 @@ export class BlogComponent implements AfterViewInit, OnDestroy, OnInit {
       queryParams: { tag },
     });
     this.cdr.detectChanges();
-  }
-
-  private handleSeo() {
-    this.seo.updateTitle('starsbit - Blog');
-    this.seo.updateDescription(
-      'Most recent posts from starsbit. Various topics are covered.'
-    );
-    this.seo.updateKeywords('blog, posts, articles, stars, starsbit');
-    this.seo.updateAuthor('stars');
-    this.seo.updateOgUrl('https://starsbit.space/blog');
-    this.seo.updateOgTitle('starsbig - Blog');
-    this.seo.updateOgDescription(
-      'Most recent posts from starsbit. Various topics are covered.'
-    );
-    this.seo.updateOgImage('https://starsbit.space/assets/images/banner.png');
   }
 }
