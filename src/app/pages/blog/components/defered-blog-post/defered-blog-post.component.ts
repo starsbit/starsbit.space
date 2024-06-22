@@ -26,7 +26,8 @@ export class DeferedBlogPostComponent {
   ) {
     // Get current route and get the post id from the route
     const route = this.router.url.split('/');
-    const routeId = route[route.length - 1];
+    // Get the last element of the route array and remove the fragment if it exists
+    const routeId = route[route.length - 1].split('#')[0];
 
     // Get the post data from the service
     this.blogPostDataClientService.getBlogPostData().subscribe((data) => {

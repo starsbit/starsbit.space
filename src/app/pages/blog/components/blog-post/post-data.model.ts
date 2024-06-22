@@ -10,6 +10,7 @@ export interface PostData {
   file: string;
   author: string;
   sources: PostSource[];
+  noOutline?: boolean;
 }
 
 export interface PostSource {

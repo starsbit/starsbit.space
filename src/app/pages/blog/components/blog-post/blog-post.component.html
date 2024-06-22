@@ -45,6 +45,11 @@
     <div class="flex justify-center items-center">
       <stars-loading [small]="true"></stars-loading>
     </div>
+    } @if (!postData.noOutline) {
+    <stars-blog-post-outline
+      [isContentRendered]="markdownRendered"
+      [childComponent]="markdownComponent"
+    ></stars-blog-post-outline>
     }
     <markdown
       [src]="postData.file"
