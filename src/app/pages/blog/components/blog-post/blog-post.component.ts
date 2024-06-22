@@ -35,23 +35,10 @@ import { PostData } from './post-data.model';
   styleUrl: './blog-post.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BlogPostComponent implements OnInit {
+export class BlogPostComponent {
   @Input() postData: PostData;
 
   @ViewChild(MarkdownComponent) markdownComponent: MarkdownComponent;
 
   markdownRendered = false;
-
-  constructor(private readonly seo: SeoService) {}
-
-  ngOnInit() {
-    this.seo.updateTitle(this.postData.title);
-    this.seo.updateDescription(this.postData.description);
-    this.seo.updateKeywords(this.postData.tags.join(', '));
-    this.seo.updateAuthor('stars');
-    this.seo.updateOgUrl(`https://starsbit.space/blog/${this.postData.route}`);
-    this.seo.updateOgTitle(this.postData.title);
-    this.seo.updateOgDescription(this.postData.description);
-    this.seo.updateOgImage(`https://starsbit.space/${this.postData.thumbnail}`);
-  }
 }

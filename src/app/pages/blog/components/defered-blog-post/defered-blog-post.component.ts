@@ -1,9 +1,10 @@
 import { AsyncPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoadingComponent } from '../../../../components/loading/loading.component';
 import { NOT_FOUND_BLOG_POST } from '../../../../constants/not-found-blog-post';
 import { LoadingService } from '../../../../services/loading.service';
+import { SeoService } from '../../../../services/seo.service';
 import { BlogPostDataClientService } from '../../../../services/web/blog-post-data-client.service';
 import { BlogPostComponent } from '../blog-post/blog-post.component';
 import { PostData } from '../blog-post/post-data.model';
@@ -16,13 +17,14 @@ import { PostData } from '../blog-post/post-data.model';
   styleUrl: './defered-blog-post.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DeferedBlogPostComponent {
+export class DeferedBlogPostComponent implements OnInit {
   post: PostData;
 
   constructor(
     public readonly loadingService: LoadingService,
-    private router: Router,
-    private blogPostDataClientService: BlogPostDataClientService
+    private readonly router: Router,
+    private readonly blogPostDataClientService: BlogPostDataClientService,
+    private readonly seo: SeoService
   ) {
     // Get current route and get the post id from the route
     const route = this.router.url.split('/');
@@ -37,5 +39,16 @@ export class DeferedBlogPostComponent {
         this.post = NOT_FOUND_BLOG_POST;
       }
     });
+  }
+
+  ngOnInit() {
+    this.seo.updateTitle(this.post.title);
+    this.seo.updateDescription(this.post.description);
+    this.seo.updateKeywords(this.post.tags.join(', '));
+    this.seo.updateAuthor('stars');
+    this.seo.updateOgUrl(`https://starsbit.space/blog/${this.post.route}`);
+    this.seo.updateOgTitle(this.post.title);
+    this.seo.updateOgDescription(this.post.description);
+    this.seo.updateOgImage(`https://starsbit.space/${this.post.thumbnail}`);
   }
 }
