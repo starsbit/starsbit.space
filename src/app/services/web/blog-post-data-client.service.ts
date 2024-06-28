@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { of, tap } from 'rxjs';
+import POST_DATA from '../../../assets/data/blog-posts.json';
 import { PostData } from '../../pages/blog/components/blog-post/post-data.model';
 
 @Injectable({
@@ -15,7 +16,10 @@ export class BlogPostDataClientService {
     if (this.postData) {
       return of(this.postData);
     }
-    return this.http.get<PostData[]>('/assets/data/blog-posts.json').pipe(
+    // Use this if you find a way to make SSR work with Cloudflare Workers
+    // return this.http.get<PostData[]>('/assets/data/blog-posts.json')
+    const postData = POST_DATA as unknown as PostData[];
+    return of(postData).pipe(
       tap((data) => {
         data.forEach((post) => {
           const date = post.date as unknown as string;

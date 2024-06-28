@@ -21,7 +21,8 @@
     "useDefineForClassFields": false,
     "strictPropertyInitialization": false,
     "lib": ["ES2022", "dom"],
-    "types": ["@cloudflare/workers-types/2023-07-01", "jasmine"]
+    "types": ["@cloudflare/workers-types/2023-07-01", "jasmine"],
+    "resolveJsonModule": true
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
