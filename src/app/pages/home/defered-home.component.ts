@@ -34,7 +34,7 @@ export class DeferedHomeComponent {
     this.seo.updateOgTitle('starsbit - Home');
     this.seo.updateOgDescription('The personal website of starsbit.');
     this.seo.updateOgImage(
-      'https://starsbit.space/assets/images/starsbit_logo_transparent_white.png'
+      'https://starsbit.space/assets/images/starsbit_logo_transparent.png'
     );
   }
 }
