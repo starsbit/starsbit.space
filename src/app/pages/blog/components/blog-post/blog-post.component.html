@@ -15,22 +15,30 @@
         class="banner object-cover w-full h-64 mx-auto relative rounded-2xl shadow-2xl"
       />
     </div>
-    <div class="flex flex-col md:flex-row justify-between items-center">
+    <div class="space-y-4">
       <div
         class="name text-3xl font-sans dark:text-white text-black mb-4 md:mb-0"
       >
         {{ postData.title }}
       </div>
-      <div class="tags">
-        @for (tag of postData.tags; track $index) {
-        <a [routerLink]="['/blog']" [queryParams]="{ tag }">
-          <span
-            class="text-sm dark:bg-gray-200 dark:hover:bg-gray-400 bg-gray-800 hover:bg-gray-600 dark:text-gray-700 dark:hover:text-gray-900 text-gray-300 hover:text-gray-100 px-2 py-1 rounded-full mr-2 mb-1 mt-1 leading-none align-middle cursor-pointer"
-          >
-            {{ tag }}
-          </span>
-        </a>
-        }
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div
+          class="reading-time text-sm text-gray-600 dark:text-gray-400 mb-4 flex items-center"
+        >
+          <mat-icon class="mr-1">access_time</mat-icon>
+          {{ timeToRead }} min read
+        </div>
+        <div class="tags">
+          @for (tag of postData.tags; track $index) {
+          <a [routerLink]="['/blog']" [queryParams]="{ tag }">
+            <span
+              class="text-sm dark:bg-gray-200 dark:hover:bg-gray-400 bg-gray-800 hover:bg-gray-600 dark:text-gray-700 dark:hover:text-gray-900 text-gray-300 hover:text-gray-100 px-2 py-1 rounded-full mr-2 mb-1 mt-1 leading-none align-middle cursor-pointer"
+            >
+              {{ tag }}
+            </span>
+          </a>
+          }
+        </div>
       </div>
     </div>
   </section>

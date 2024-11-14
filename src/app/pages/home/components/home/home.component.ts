@@ -9,6 +9,7 @@ import {
   ChangeDetectorRef,
   Component,
   Inject,
+  isDevMode,
   OnDestroy,
   PLATFORM_ID,
 } from '@angular/core';
@@ -38,6 +39,7 @@ import { ProjectComponent } from '../project/project.component';
 export class HomeComponent implements AfterViewInit, OnDestroy {
   copyrightYear = new Date().getFullYear();
   spin = false;
+  isProduction = false;
 
   private readonly _subscriptions = new Subscription();
 
@@ -48,14 +50,18 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   ) {}
 
   ngAfterViewInit() {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
     this._subscriptions.add(
       this.themeService.isDarkMode$.subscribe(() => {
         this.cdr.markForCheck();
       })
     );
 
-    if (!isPlatformBrowser(this.platformId)) {
-      return;
+    if (!isDevMode()) {
+      this.isProduction = true;
     }
 
     const timeline = gsap.timeline({
