@@ -29,6 +29,31 @@
   border-color: $blog-light-bg;
 }
 
+:host .post ::ng-deep table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+:host .post ::ng-deep th,
+:host .post ::ng-deep td {
+  border-bottom: 1px solid $blog-dark-bg; // Adjust the color as needed
+  padding: 8px;
+}
+
+:host .post ::ng-deep th {
+  border-bottom: 3px solid $blog-dark-bg; // Thicker top border for the header
+}
+
+:host :host-context(.dark) .post ::ng-deep th,
+:host :host-context(.dark) .post ::ng-deep td {
+  border-bottom: 1px solid $blog-light-bg; // Adjust the color for dark mode
+}
+
+:host :host-context(.dark) .post ::ng-deep th {
+  border-bottom: 3px solid $blog-light-bg; // Thicker top border for the header in dark mode
+}
+
 :host .post ::ng-deep a,
 a {
   text-decoration: underline dotted;
@@ -62,6 +87,10 @@ a {
   margin-left: auto;
   margin-right: auto;
   border-radius: 0.5rem;
+}
+
+:host .post ::ng-deep ol {
+  margin-bottom: 12px;
 }
 
 :host .post ::ng-deep h1 {

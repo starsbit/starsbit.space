@@ -69,7 +69,10 @@ What is the probability that the stock market will be in a *Bull Market* for two
 To calculate this probability, we need to multiply the transition probabilities for each day. The probability of the stock market being in a *Bull Market* for two days and then shifting to a *Bear Market* on the third day is given by:
 
 $$
-P(\text{Bull Market, Bull Market, Bear Market}) = P(\text{Bull Market}) \times P(\text{Bull Market} \rightarrow \text{Bull Market}) \times P(\text{Bull Market} \rightarrow \text{Bear Market})
+P(\text{Bull Market, Bull Market, Bear Market}) =
+$$
+$$
+P(\text{Bull Market}) \times P(\text{Bull Market} \rightarrow \text{Bull Market}) \times P(\text{Bull Market} \rightarrow \text{Bear Market})
 $$
 
 When we plug in the values from the transition matrix, we get:
@@ -162,7 +165,10 @@ To calculate this probability, we need to consider both the transition probabili
 
 Now we multiply all these probabilities together:
 $$
-P(\text{Bull Market, Bear Market, Stagnant Market, Positive Change, Negative Change, Positive Change}) = 1 \times 0.6 \times 0.2 \times 0.8 \times 0.05 \times 0.3 = 0.00144
+P(\text{Bull Market, Bear Market, Stagnant Market, Positive Change, Negative Change, Positive Change}) =
+$$
+$$
+1 \times 0.6 \times 0.2 \times 0.8 \times 0.05 \times 0.3 = 0.00144
 $$
 
 This means that the probability of the stock market being in a *Bull Market* on the first day, shifting to a *Bear Market* on the second day, and then shifting back to a *Stagnant Market* on the third day, given the observed daily returns, is 0.144%.
