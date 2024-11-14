@@ -35,6 +35,7 @@
         <p class="description-item">
           for my <strong>blog</strong>, all opinions are my own
         </p>
+        @if (isProduction) {
         <p class="description-item flex items-center">
           number of visitors:
           <img
@@ -48,7 +49,7 @@
             src="https://www.counter12.com/ad.js?id=b7xB9dZ94a1zaCww"
           ></script>
         </p>
-        @if(themeService.darkmode) {
+        } @if(themeService.darkmode) {
         <p class="description-item">
           interface looks best in <strong>light mode</strong>
         </p>

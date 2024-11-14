@@ -39,4 +39,8 @@ export class BlogPostDataClientService {
       })
     );
   }
+
+  getBlogPostFile(url: string) {
+    return this.http.get(url, { responseType: 'text' });
+  }
 }
