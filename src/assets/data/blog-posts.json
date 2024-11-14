@@ -74,5 +74,18 @@
     "file": "assets/data/blog-posts/host-static-website-for-free-on-cloudflare.md",
     "author": "stars",
     "sources": []
+  },
+  {
+    "title": "Hidden Markov Models and Why You Should Know It",
+    "description": "Introduction to Hidden Markov Models based on an easy example.",
+    "date": "14.11.2024",
+    "image": "assets/images/blog/hidden-markov-models-and-why-you-should-know-it/image.png",
+    "thumbnail": "assets/images/blog/hidden-markov-models-and-why-you-should-know-it/thumbnail.png",
+    "tags": ["Mathematics", "AI"],
+    "route": "hidden-markov-models-and-why-you-should-know-it",
+    "published": true,
+    "file": "assets/data/blog-posts/hidden-markov-models-and-why-you-should-know-it.md",
+    "author": "stars",
+    "sources": []
   }
 ]
