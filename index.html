@@ -16,6 +16,22 @@
 <p id="place" aria-live="polite"><span class="label" lang="ja"></span><span class="name"></span></p>
 <p id="clock"><span class="label">Germany</span><time></time></p>
 
+<!-- the season and the hour, bottom middle: as they are in Germany, unless another is picked -->
+<div id="almanac" role="group" aria-label="Season and hour">
+  <div class="choices" role="group" aria-label="Season">
+    <button type="button" data-season="spring" aria-pressed="false">Spring</button>
+    <button type="button" data-season="summer" aria-pressed="false">Summer</button>
+    <button type="button" data-season="autumn" aria-pressed="false">Autumn</button>
+    <button type="button" data-season="winter" aria-pressed="false">Winter</button>
+  </div>
+  <div class="choices" role="group" aria-label="Hour">
+    <button type="button" data-time="day" aria-pressed="false">Day</button>
+    <button type="button" data-time="dusk" aria-pressed="false">Dusk</button>
+    <button type="button" data-time="night" aria-pressed="false">Night</button>
+  </div>
+  <button type="button" class="reset" title="Back to the season and hour it is in Germany">Now</button>
+</div>
+
 <!-- music, bottom left: off until asked for, as browsers want -->
 <button id="music" type="button" aria-pressed="false" aria-label="Play music">
   <span class="note"></span>
@@ -41,7 +57,7 @@
     <li><a href="https://steamcommunity.com/profiles/76561198162091272" target="_blank" rel="noopener">Steam</a></li>
     <li><a href="https://discord.com/users/226376714974920704" target="_blank" rel="noopener">Discord</a></li>
   </ul>
-  <p class="colophon">The painting shows Hinamizawa in the season and at the hour it is in Germany. Click it to walk on.<br>© <span class="year"></span> starsbit</p>
+  <p class="colophon">The painting shows Hinamizawa in the season and at the hour it is in Germany, unless you pick another at the bottom; a dot marks the one it really is. Click it to walk on.<br>© <span class="year"></span> starsbit</p>
 </section>
 <svg class="defs" aria-hidden="true" focusable="false">
   <!-- a stamp is never quite even: ragged edges and a few spots the ink missed -->

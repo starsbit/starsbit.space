@@ -69,6 +69,85 @@ canvas {
   font-size: 13px;
 }
 
+/* ---- the season and the hour, bottom middle: written like the corners above ---- */
+#almanac {
+  position: fixed;
+  left: 50%;
+  bottom: max(30px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0 14px;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  color: var(--paper);
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.7), 0 0 3px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.6);
+  user-select: none;
+}
+#almanac .choices { display: flex; align-items: center; }
+#almanac .choices + .choices::before {   /* a thin stroke between the seasons and the hours */
+  content: "";
+  width: 1px;
+  height: 13px;
+  margin-right: 14px;
+  background: currentColor;
+  opacity: 0.4;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
+}
+#almanac button {
+  position: relative;
+  padding: 8px 7px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-shadow: inherit;
+  opacity: 0.72;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+#almanac button:hover { opacity: 0.92; }
+#almanac button[aria-pressed="true"] { opacity: 1; }
+#almanac button[aria-pressed="true"]::after {   /* what is painted now: underlined */
+  content: "";
+  position: absolute;
+  left: 7px;
+  right: calc(7px + 0.1em);
+  bottom: 3px;
+  height: 1px;
+  background: currentColor;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+#almanac button.now::before {             /* the season or hour it really is: a dot in the red of the seal */
+  content: "";
+  position: absolute;
+  top: 4px;
+  right: 1px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #e0503c;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+}
+#almanac .reset {                         /* back to now: small, like the labels at the top */
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  opacity: 0.75;
+}
+#almanac .reset:disabled { visibility: hidden; }
+#almanac button:focus-visible { outline: 1px solid var(--paper); outline-offset: -2px; }
+/* where the bar no longer fits between the note and the seal, it goes above them, in two rows if need be */
+@media (max-width: 960px) {
+  #almanac { bottom: calc(max(22px, env(safe-area-inset-bottom)) + 70px); }
+  #almanac .choices + .choices::before { display: none; }
+}
+
 /* ---- the music note, bottom left ---- */
 #music {
   position: fixed;

@@ -516,15 +516,26 @@ async function show() {
   }
 }
 
-const clockEl = document.querySelector('#clock time');
+// A season or an hour can be picked by hand, at the bottom; whatever has not been picked goes on
+// following Berlin.  Nothing is remembered: every visit begins with the season and the hour as they are.
+const chosen = { season: null, time: null };
+const almanac = document.getElementById('almanac'), clockEl = document.querySelector('#clock time');
 const clockFmt = new Intl.DateTimeFormat('de-DE', { timeZone: ZONE, hour: '2-digit', minute: '2-digit' });
+let live = berlinScene();
 function tick() {
-  clockEl.textContent = clockFmt.format(new Date());
-  const now = berlinScene();
-  if (now.season !== state.season || now.time !== state.time) {
-    Object.assign(state, now);
+  live = berlinScene();
+  const want = { season: chosen.season || live.season, time: chosen.time || live.time };
+  if (want.season !== state.season || want.time !== state.time) {
+    Object.assign(state, want);
     show();
   }
+  clockEl.textContent = clockFmt.format(new Date());
+  for (const b of almanac.querySelectorAll('[data-season], [data-time]')) {
+    const k = b.dataset.season ? 'season' : 'time', v = b.dataset[k];
+    b.setAttribute('aria-pressed', state[k] === v);
+    b.classList.toggle('now', live[k] === v);
+  }
+  almanac.querySelector('.reset').disabled = !(chosen.season || chosen.time);
 }
 
 // ---------- going round: a click (or a key) takes you on to the next place, and from the last back to the first ----------
@@ -579,10 +590,20 @@ function card(open) {
 }
 seal.addEventListener('click', () => card(about.hidden));
 
+// ---------- the season and the hour, picked at the bottom ----------
+almanac.addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  if (b.dataset.season) chosen.season = b.dataset.season === live.season ? null : b.dataset.season;   // the season it is is no pick
+  else if (b.dataset.time) chosen.time = b.dataset.time === live.time ? null : b.dataset.time;
+  else if (b.classList.contains('reset')) { chosen.season = chosen.time = null; }
+  tick();
+});
+
 canvas.addEventListener('click', () => { if (!about.hidden) card(false); else next(); });   // a click beside the card only puts it away
 window.addEventListener('keydown', e => {
   if (e.key === 'Escape' && !about.hidden) { card(false); seal.focus(); return; }
-  if (e.target.closest && e.target.closest('a, button, #about')) return;                       // keys meant for a link or the seal
+  if (e.target.closest && e.target.closest('a, button, #about')) return;                       // keys meant for a link or a button
   if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') { e.preventDefault(); next(); }
 });
 function go() {
