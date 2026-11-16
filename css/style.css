@@ -24,6 +24,14 @@ canvas {
   display: block;
 }
 #sprites { pointer-events: none; }
+/* the tooth of the canvas, over the paint and whatever moves on it (made in painting.js) */
+#grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: var(--grain, none);
+  background-size: 192px 192px;
+}
 #scene { cursor: pointer; }
 
 /* ---- where we are (top left) and the time in Berlin (top right) ---- */

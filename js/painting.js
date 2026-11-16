@@ -195,12 +195,32 @@ function resize() {
   for (const c of [canvas, top]) { c.width = Math.round(W * dpr); c.height = Math.round(H * dpr); }
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   tctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.lineCap = 'round';
+  ctx.lineCap = 'butt';                                                        // bristles end square, not in blobs
   ctx.fillStyle = state.time === 'night' ? '#10131d' : state.time === 'dusk' ? '#4a3836' : '#d9d2c2';   // bare paper
   ctx.fillRect(0, 0, W, H);
   flakes.length = 0;
   if (scene) view = viewOf(scene);
   changedAt = clock;
+}
+
+// The tooth of the canvas: specks of light and shadow, a little stronger along a loose weave, laid
+// over everything by CSS so the painting itself never has to carry them.  No blending, only alpha,
+// so the browser does not have to work the whole window out anew every frame.
+{
+  const n = 192, c = document.createElement('canvas');
+  c.width = c.height = n;
+  const x = c.getContext('2d'), id = x.createImageData(n, n), d = id.data, R = rng(42);
+  for (let y = 0, i = 0; y < n; y++) {
+    for (let k = 0; k < n; k++, i += 4) {
+      const weave = 0.5 + 0.25 * Math.sin(k * 2.1 + Math.sin(y * 0.37) * 1.5) + 0.25 * Math.sin(y * 2.1 + Math.sin(k * 0.29) * 1.5);
+      const v = (R() - 0.5) * (R() < 0.2 ? 2 : 1) + (weave - 0.5) * 0.5;
+      const light = v > 0;
+      d[i] = d[i + 1] = d[i + 2] = light ? 255 : 20;
+      d[i + 3] = Math.min(255, Math.abs(v) * (light ? 26 : 34));
+    }
+  }
+  x.putImageData(id, 0, 0);
+  try { document.documentElement.style.setProperty('--grain', `url(${c.toDataURL('image/png')})`); } catch (e) { /* no grain, then */ }
 }
 
 // How broad the brush is, by how long the picture has been worked on: eight times its final width at
@@ -263,18 +283,80 @@ function stroke(t, age, settled, sc, ctx, view) {
   const fine = 1 - 0.72 * smooth(0.05, 0.5, d) * smooth(0.5, 6, age);          // loose at first, careful later
   size *= fine; len *= fine;
 
-  const hx = ca * len * 0.5, hy = sa * len * 0.5, nx = -sa, ny = ca;
+  lay(x, y, ca, sa, len, size, r, g, b);
+}
+
+// ---------- laying a stroke down: a flat brush loaded with paint that stands up from the canvas ----------
+// First the body of the stroke: the paint the brush puts down while it is still full, a little uneven
+// along its edges, a little narrower where it begins to run dry.  Then the bristles drag their own
+// streaks through it and beyond, out past the body where the brush has nearly run out, ragged at the
+// end.  The paint has thickness, and the light comes from the upper left: the bristles on the side
+// turned towards it come out paler, those on the side turned away darker, with a bright lip along
+// one edge and a thin shadow cast beside the other.
+const LX = -0.6, LY = -0.8;                                                    // where the light comes from
+const MAXB = 14, BR = new Float32Array(MAXB * 4);                              // per bristle: offset, start, end, tone
+const tone = (r, g, b, k) => k >= 0                                            // towards white, or towards black
+  ? `rgb(${r + (255 - r) * k | 0},${g + (255 - g) * k | 0},${b + (255 - b) * k | 0})`
+  : `rgb(${r * (1 + k) | 0},${g * (1 + k) | 0},${b * (1 + k) | 0})`;
+
+function lay(x, y, ca, sa, len, size, r, g, b) {
+  r = clamp(r, 0, 255); g = clamp(g, 0, 255); b = clamp(b, 0, 255);
+  const nx = -sa, ny = ca, x0 = x - ca * len * 0.5, y0 = y - sa * len * 0.5, dx = ca * len, dy = sa * len;
   const bend = (Math.random() - 0.5) * len * 0.3;
+  // a point on the stroke: s along it (0 to 1), o across it, the whole bowed a little
+  const px = (s, o) => x0 + dx * s + nx * (o + bend * 4 * s * (1 - s));
+  const py = (s, o) => y0 + dy * s + ny * (o + bend * 4 * s * (1 - s));
+  const curve = (s0, s1, o) => {                                               // a bristle's path, as one curve through its middle
+    const sm = (s0 + s1) / 2, ax = px(s0, o), ay = py(s0, o), bx = px(s1, o), by = py(s1, o);
+    ctx.moveTo(ax, ay);
+    ctx.quadraticCurveTo(2 * px(sm, o) - (ax + bx) / 2, 2 * py(sm, o) - (ay + by) / 2, bx, by);
+  };
+  const wide = Math.max(1.4, size * 0.9), half = wide / 2;
+  const n = clamp(Math.round(wide / 1.6), 3, MAXB), sp = wide / n;
+  const facing = nx * LX + ny * LY;                                            // how squarely one edge faces the light
+  const body = 0.08 + 0.12 * smooth(0.4, 2.2, size / U);                       // a broad, loaded brush leaves thicker paint
+  const full = 0.68 + Math.random() * 0.2;                                     // how far the brush stays full
+
+  // the body
+  const S = 6, wob = Math.min(sp * 0.35, half * 0.2);
+  const hw = t => half * Math.min(1, 0.6 + 0.4 * Math.sqrt(t / 0.12)) * (1 - 0.3 * t * t * t);
   ctx.globalAlpha = 0.84;
-  ctx.lineWidth = Math.max(0.8, size * 0.34);
-  for (let k = -1; k <= 1; k++) {                                              // three bristles, each a shade apart
-    const o = k * size * 0.27, s = 1 + (Math.random() - 0.5) * 0.12;
-    ctx.strokeStyle = `rgb(${r * s | 0},${g * s | 0},${b * s | 0})`;
+  ctx.fillStyle = tone(r, g, b, (Math.random() - 0.5) * 0.04);
+  ctx.beginPath();
+  for (let k = 0; k <= S; k++) { const t = k / S, o = hw(t) + (Math.random() - 0.5) * wob; ctx.lineTo(px(t * full, o), py(t * full, o)); }
+  for (let k = S; k >= 0; k--) { const t = k / S, o = -hw(t) + (Math.random() - 0.5) * wob; ctx.lineTo(px(t * full, o), py(t * full, o)); }
+  ctx.fill();
+
+  // the bristles
+  for (let i = 0; i < n; i++) {
+    const e = n > 1 ? i / (n - 1) - 0.5 : 0, q = Math.random();
+    BR[i * 4] = e * wide * 0.92 + (Math.random() - 0.5) * sp * 0.5;
+    BR[i * 4 + 1] = e * e * 0.25 + Math.random() * 0.04;
+    BR[i * 4 + 2] = clamp(full * (0.75 + 0.25 * q) + (1 - full) * q * q * 1.6 - e * e * 0.6, 0.25, 1);
+    const lit = 2 * e * facing + (Math.random() - 0.5) * 0.9;                  // the side it is on, and some streaks of its own
+    BR[i * 4 + 3] = lit < -0.35 ? 0 : lit > 0.35 ? 2 : 1;
+  }
+  ctx.lineWidth = Math.max(0.6, sp * 0.62);
+  for (let side = 0; side < 3; side++) {                                       // away from the light, the middle, towards it
+    ctx.globalAlpha = side === 1 ? 0.6 : 0.72;
+    ctx.strokeStyle = tone(r, g, b, side === 0 ? -body * 1.3 : side === 2 ? body : (Math.random() - 0.5) * 0.08);
     ctx.beginPath();
-    ctx.moveTo(x - hx + nx * o, y - hy + ny * o);
-    ctx.quadraticCurveTo(x + nx * (o + bend), y + ny * (o + bend), x + hx + nx * o, y + hy + ny * o);
+    for (let i = 0; i < n; i++) if (BR[i * 4 + 3] === side) curve(BR[i * 4 + 1], BR[i * 4 + 2], BR[i * 4]);
     ctx.stroke();
   }
+
+  // the lip of the stroke that catches the light, and the shadow it throws on the other side
+  const f = Math.abs(facing);
+  if (size < U * 0.45 || f < 0.2 || len < wide * 1.7) return;                 // a short dab has no ridge worth the name
+  const toward = facing > 0 ? 1 : -1;
+  ctx.globalAlpha = 0.6 * f;
+  ctx.strokeStyle = tone(r, g, b, body * 2.4);
+  ctx.lineWidth = Math.max(0.6, sp * 0.4);
+  ctx.beginPath(); curve(0.06, full * (0.6 + Math.random() * 0.35), toward * half * 0.8); ctx.stroke();
+  ctx.globalAlpha = 0.4 * f;
+  ctx.strokeStyle = tone(r, g, b, -body * 2.6);
+  ctx.lineWidth = Math.max(0.7, sp * 0.5);
+  ctx.beginPath(); curve(0.1, full * (0.7 + Math.random() * 0.3), -toward * (half + ctx.lineWidth * 0.4)); ctx.stroke();
 }
 
 // ---------- what really moves ----------
