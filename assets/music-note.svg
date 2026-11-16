@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!-- The music button, bottom left of the page, while the music plays (music-note-off.svg is the
+       other state).  The page uses it only as a shape (a CSS mask) and fills it with the button's colour. -->
+  <path d="M8.6 17.6V6.2l11-2.2v11.4" fill="none" stroke="#000" stroke-width="1.6" stroke-linejoin="round"/>
+  <path d="M8.6 6.2l11-2.2v2.6l-11 2.2z"/>
+  <ellipse cx="6.2" cy="17.8" rx="2.8" ry="2.2" transform="rotate(-20 6.2 17.8)"/>
+  <ellipse cx="17.2" cy="15.6" rx="2.8" ry="2.2" transform="rotate(-20 17.2 15.6)"/>
+</svg>

@@ -15,6 +15,12 @@
 <p id="place" aria-live="polite"><span class="label" lang="ja"></span><span class="name"></span></p>
 <p id="clock"><span class="label">Germany</span><time></time></p>
 
+<!-- music, bottom left: off until asked for, as browsers want -->
+<button id="music" type="button" aria-pressed="false" aria-label="Play music">
+  <span class="note"></span>
+</button>
+<audio id="tune" src="assets/You.mp3" loop preload="none"></audio>
+
 <!-- the painter's seal, bottom right; it opens a card about who made this -->
 <button id="seal" type="button" aria-expanded="false" aria-controls="about" aria-label="About starsbit"><span class="mark"></span></button>
 <section id="about" aria-label="About starsbit" tabindex="-1" hidden>
@@ -32,7 +38,7 @@
     <li><a href="https://ko-fi.com/starsbit" target="_blank" rel="noopener">Ko-fi</a></li>
     <li><a href="https://anilist.co/user/starsbit/" target="_blank" rel="noopener">AniList</a></li>
     <li><a href="https://steamcommunity.com/profiles/76561198162091272" target="_blank" rel="noopener">Steam</a></li>
-    <li><a href="https://discordid.netlify.app/?id=226376714974920704" target="_blank" rel="noopener">Discord</a></li>
+    <li><a href="https://discord.com/users/226376714974920704" target="_blank" rel="noopener">Discord</a></li>
   </ul>
   <p class="colophon">The painting shows Hinamizawa in the season and at the hour it is in Germany. Click it to walk on.<br>© <span class="year"></span> starsbit</p>
 </section>

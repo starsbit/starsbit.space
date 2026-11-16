@@ -61,14 +61,52 @@ canvas {
   font-size: 13px;
 }
 
+/* ---- the music note, bottom left ---- */
+#music {
+  position: fixed;
+  left: max(18px, env(safe-area-inset-left));
+  bottom: max(24px, env(safe-area-inset-bottom));
+  width: 54px;
+  height: 54px;
+  padding: 10px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--paper);
+  opacity: 0.72;
+  cursor: pointer;
+  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.55)) drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
+  transition: opacity 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+#music .note {                           /* the note is a shape from assets/, filled with the button's colour */
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: currentColor;
+  -webkit-mask: url(../assets/music-note-off.svg) center / contain no-repeat;
+  mask: url(../assets/music-note-off.svg) center / contain no-repeat;
+  transition: background-color 0.3s;
+}
+#music[aria-pressed="false"] { color: #e0503c; opacity: 0.9; }   /* off: struck through, in the red of the seal */
+#music[aria-pressed="true"] .note {
+  -webkit-mask-image: url(../assets/music-note.svg);
+  mask-image: url(../assets/music-note.svg);
+}
+#music:hover, #music[aria-pressed="true"] { opacity: 1; }
+#music[aria-pressed="true"] .note { animation: sway 4s ease-in-out infinite; transform-origin: 50% 80%; }
+#music:focus-visible { outline: 1px solid var(--paper); outline-offset: 2px; }
+@keyframes sway { 25% { transform: rotate(-6deg); } 75% { transform: rotate(6deg); } }
+@media (prefers-reduced-motion: reduce) { #music[aria-pressed="true"] .note { animation: none; } }
+
 /* ---- the painter's seal, and the card it opens ---- */
 .defs { position: absolute; width: 0; height: 0; }
 #seal {
   position: fixed;
   right: max(22px, env(safe-area-inset-right));
   bottom: max(22px, env(safe-area-inset-bottom));
-  width: 120px;
-  height: 48px;
+  width: 144px;
+  height: 58px;
   padding: 0;
   border: 0;
   background: none;
@@ -89,7 +127,7 @@ canvas {
 }
 #seal .mark {
   position: absolute;
-  inset: 9px 12px;
+  inset: 11px 14px;
   background: #fbefe2;
   -webkit-mask: url(../assets/starsbit-black-cropped.svg) center / contain no-repeat;
   mask: url(../assets/starsbit-black-cropped.svg) center / contain no-repeat;
@@ -100,7 +138,7 @@ canvas {
 #about {
   position: fixed;
   right: max(22px, env(safe-area-inset-right));
-  bottom: calc(max(22px, env(safe-area-inset-bottom)) + 66px);
+  bottom: calc(max(22px, env(safe-area-inset-bottom)) + 76px);
   width: min(350px, calc(100vw - 32px));
   max-height: calc(100vh - 140px);
   overflow-y: auto;

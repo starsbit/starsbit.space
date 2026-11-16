@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!-- The music button while the music is off: the note, struck through, with a little gap
+       cut around the stroke so the two never touch.  Used as a shape (a CSS mask) by the page. -->
+  <defs>
+    <mask id="gap" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+      <rect width="24" height="24" fill="#fff"/>
+      <path d="M3.5 3.5l17 17" stroke="#000" stroke-width="4.6" stroke-linecap="round"/>
+    </mask>
+  </defs>
+  <g mask="url(#gap)">
+    <path d="M8.6 17.6V6.2l11-2.2v11.4" fill="none" stroke="#000" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M8.6 6.2l11-2.2v2.6l-11 2.2z"/>
+    <ellipse cx="6.2" cy="17.8" rx="2.8" ry="2.2" transform="rotate(-20 6.2 17.8)"/>
+    <ellipse cx="17.2" cy="15.6" rx="2.8" ry="2.2" transform="rotate(-20 17.2 15.6)"/>
+  </g>
+  <path d="M3.5 3.5l17 17" stroke="#000" stroke-width="1.8" stroke-linecap="round"/>
+</svg>

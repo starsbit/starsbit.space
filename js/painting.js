@@ -215,9 +215,14 @@ function wind(t, sx, sy) {
   return Math.sin(t * 1.25 + sy * 0.045 + sx * 0.021) * gust;
 }
 
+let spot = 0;
 function stroke(t, age, settled, sc, ctx, view) {
   const w = sc.w, h = sc.h;
-  const x = Math.random() * W, y = Math.random() * H;
+  // Where: the next point of a low-discrepancy sequence (R2), so the strokes spread evenly over the
+  // canvas and no spot is left unpainted by chance, nudged a little so they never fall in a pattern.
+  spot = (spot + 1) % 1e9;
+  const x = (((0.5 + spot * 0.7548776662466927) % 1) + (Math.random() - 0.5) * 0.004) * W;
+  const y = (((0.5 + spot * 0.5698402909980532) % 1) + (Math.random() - 0.5) * 0.004) * H;
   const sx = (x - view.ox) / view.s, sy = (y - view.oy) / view.s;
   const xi = clamp(sx | 0, 0, w - 1), yi = clamp(sy | 0, 0, h - 1), i = yi * w + xi;
   const veg = sc.veg[i] > 110, sky = sc.sky[i] > 128, water = sc.water[i] > 110;
@@ -397,7 +402,9 @@ function frame(ms) {
     if (!(still && age > 18)) {
       // Paint by the area covered, not by the stroke: a broad brush gets few strokes a second, a fine
       // one many, so a new picture comes on at a walking pace and never as a flurry.
-      const steady = clamp(W * H / 4200, 110, 420), b = broad(age);
+      // Larger screens get more strokes, for finer work; small ones never fewer than a 1280 x 720 one,
+      // or a phone would be left with gaps.
+      const steady = clamp(W * H / 4200, 220, 420), b = broad(age);
       const count = steady * (settled ? 0.6 : PACE * (0.2 + 0.8 * smooth(2, 12, age)) / (b * b));
       for (owed = Math.min(owed + count * dt * 60, 600); owed >= 1; owed--) stroke(clock, age, settled, scene, ctx, view);
       ctx.globalAlpha = 1;
@@ -443,6 +450,42 @@ function next() {
   const i = PLACES.findIndex(p => p.id === state.place);
   location.hash = PLACES[(i + 1) % PLACES.length].id;
 }
+
+// ---------- music: off until asked for, and then only quietly, in the background ----------
+// The recording is mastered loud (about -18 dB on average); at a fifth of full volume (-14 dB) the piano
+// stays behind the painting.  It goes through Web Audio because iOS will not let a page set an
+// <audio>'s volume, and it fades in and out rather than starting and stopping.
+const music = document.getElementById('music'), tune = document.getElementById('tune');
+const QUIET = 0.2;
+let audio = null, gain = null;
+function sound(on) {
+  if (on && !audio) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (AC) {
+      audio = new AC();
+      gain = audio.createGain();
+      gain.gain.value = 0;
+      audio.createMediaElementSource(tune).connect(gain).connect(audio.destination);
+    }
+  }
+  music.setAttribute('aria-pressed', on);
+  music.setAttribute('aria-label', on ? 'Mute music' : 'Play music');
+  if (gain) {
+    const g = gain.gain, t = audio.currentTime;
+    g.cancelScheduledValues(t);
+    g.setValueAtTime(g.value, t);
+    g.linearRampToValueAtTime(on ? QUIET : 0, t + (on ? 3 : 1.2));
+  } else {
+    tune.volume = on ? QUIET : 0;
+  }
+  if (on) {
+    if (audio) audio.resume();
+    tune.play().catch(() => sound(false));
+  } else {
+    setTimeout(() => { if (music.getAttribute('aria-pressed') !== 'true') tune.pause(); }, 1300);
+  }
+}
+music.addEventListener('click', () => sound(music.getAttribute('aria-pressed') !== 'true'));
 
 // ---------- the seal, and the card about who painted this ----------
 const seal = document.getElementById('seal'), about = document.getElementById('about');
