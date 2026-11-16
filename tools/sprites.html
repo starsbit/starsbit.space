@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sprites</title>
+<style>
+  body { margin: 24px; background: #556b4a; color: #f3ecdf; font: 14px Georgia, serif; }
+  figure { display: inline-block; margin: 0 12px 16px 0; text-align: center; }
+  canvas { display: block; width: 96px; height: 96px; }
+  a { color: inherit; }
+  #out { display: none; }
+</style>
+</head>
+<body>
+<!--
+  The falling leaves and blossoms in assets/sprites/.  Open this page in a browser and
+  click a picture to save it, or run tools/build_sprites.py to write them all at once.
+-->
+<div id="sheet"></div>
+<pre id="out"></pre>
+<script>
+const TAU = Math.PI * 2, SIZE = 128;
+// Each is drawn in -32..32 and saved at SIZE pixels square.
+const sprite = draw => {
+  const c = document.createElement('canvas');
+  c.width = c.height = SIZE;
+  const x = c.getContext('2d');
+  x.translate(SIZE / 2, SIZE / 2); x.scale(SIZE / 64, SIZE / 64); x.lineCap = 'round'; x.lineJoin = 'round';
+  draw(x);
+  x.globalCompositeOperation = 'source-atop';                                  // a little light from the upper left
+  const g = x.createLinearGradient(-24, -24, 24, 24);
+  g.addColorStop(0, 'rgba(255,245,220,0.22)'); g.addColorStop(0.5, 'rgba(255,245,220,0)'); g.addColorStop(1, 'rgba(30,10,0,0.22)');
+  x.fillStyle = g; x.fillRect(-32, -32, 64, 64);
+  return c;
+};
+const veins = (x, col, lines) => {
+  x.strokeStyle = col; x.lineWidth = 1;
+  x.beginPath();
+  for (const [a, b, c, d] of lines) { x.moveTo(a, b); x.lineTo(c, d); }
+  x.stroke();
+};
+const stem = (x, col, x0, y0, x1, y1) => {
+  x.strokeStyle = col; x.lineWidth = 2.2;
+  x.beginPath(); x.moveTo(x0, y0); x.quadraticCurveTo(x0 + 3, (y0 + y1) / 2, x1, y1); x.stroke();
+};
+const momiji = (col, vein) => sprite(x => {                                    // a Japanese maple leaf: seven pointed lobes
+  const n = 7, tips = [];
+  x.fillStyle = col;
+  x.beginPath();
+  x.arc(0, 4, 9, 0, TAU);
+  for (let k = 0; k < n; k++) {
+    const e = k / (n - 1) * 2 - 1, a = -Math.PI / 2 + e * 0.8 * Math.PI;
+    const len = 27 * (1 - 0.48 * e * e), w = 0.62;
+    const tx = Math.cos(a) * len, ty = 4 + Math.sin(a) * len;
+    x.moveTo(0, 4);
+    x.quadraticCurveTo(Math.cos(a - w) * len * 0.66, 4 + Math.sin(a - w) * len * 0.66, tx, ty);
+    x.quadraticCurveTo(Math.cos(a + w) * len * 0.66, 4 + Math.sin(a + w) * len * 0.66, 0, 4);
+    tips.push([0, 4, tx * 0.85, 4 + (ty - 4) * 0.85]);
+  }
+  x.fill();
+  veins(x, vein, tips);
+  stem(x, vein, 0, 10, 2, 24);
+});
+const ginkgo = (col, vein) => sprite(x => {                                    // a ginkgo fan, split in the middle
+  x.fillStyle = col;
+  x.beginPath();
+  x.moveTo(0, 12);
+  x.arc(0, 12, 30, -Math.PI / 2 - 0.78, -Math.PI / 2 - 0.05);
+  x.lineTo(0, -8);
+  x.arc(0, 12, 30, -Math.PI / 2 + 0.05, -Math.PI / 2 + 0.78);
+  x.closePath();
+  x.fill();
+  const lines = [];
+  for (let k = -6; k <= 6; k++) { const a = -Math.PI / 2 + k * 0.12; lines.push([0, 12, Math.cos(a) * 27, 12 + Math.sin(a) * 27]); }
+  veins(x, vein, lines);
+  stem(x, vein, 0, 12, 1, 30);
+});
+const oval = (col, vein) => sprite(x => {                                      // a plain leaf, pointed at the tip
+  x.fillStyle = col;
+  x.beginPath();
+  x.moveTo(0, -27);
+  x.bezierCurveTo(15, -15, 13, 12, 0, 19);
+  x.bezierCurveTo(-13, 12, -15, -15, 0, -27);
+  x.fill();
+  const lines = [[0, -24, 0, 19]];
+  for (let k = 0; k < 4; k++) { const y = -14 + k * 8; lines.push([0, y + 4, 9 - k, y - 3], [0, y + 4, -9 + k, y - 3]); }
+  veins(x, vein, lines);
+  stem(x, vein, 0, 19, 1, 29);
+});
+const petalPath = (x, R) => {                                                  // a sakura petal, notched at its tip
+  x.moveTo(0, R);
+  x.bezierCurveTo(-R * 0.95, R * 0.35, -R * 0.85, -R * 0.85, -R * 0.2, -R);
+  x.lineTo(0, -R * 0.72);
+  x.lineTo(R * 0.2, -R);
+  x.bezierCurveTo(R * 0.85, -R * 0.85, R * 0.95, R * 0.35, 0, R);
+};
+const petal = (base, tip) => sprite(x => {
+  const g = x.createLinearGradient(0, 24, 0, -24);
+  g.addColorStop(0, base); g.addColorStop(0.55, tip); g.addColorStop(1, tip);
+  x.fillStyle = g;
+  x.beginPath(); petalPath(x, 24); x.fill();
+});
+const blossom = sprite(x => {                                                  // now and then a whole flower comes down
+  for (let k = 0; k < 5; k++) {
+    x.save();
+    x.rotate(k * TAU / 5);
+    x.translate(0, -14);
+    const g = x.createLinearGradient(0, 13, 0, -13);
+    g.addColorStop(0, '#ef9fb8'); g.addColorStop(0.6, '#fde8ee'); g.addColorStop(1, '#fff6f8');
+    x.fillStyle = g;
+    x.beginPath(); petalPath(x, 13); x.fill();
+    x.restore();
+  }
+  x.fillStyle = '#d4566f';
+  x.beginPath(); x.arc(0, 0, 3.5, 0, TAU); x.fill();
+  x.fillStyle = '#f2d36b';
+  for (let k = 0; k < 8; k++) { const a = k * TAU / 8; x.beginPath(); x.arc(Math.cos(a) * 5.5, Math.sin(a) * 5.5, 1.2, 0, TAU); x.fill(); }
+});
+const SPRITES = {
+  'maple-1': momiji('#b8391a', 'rgba(70,12,0,0.4)'),
+  'maple-2': momiji('#d0461c', 'rgba(70,12,0,0.4)'),
+  'maple-3': momiji('#8c2a14', 'rgba(70,12,0,0.4)'),
+  'maple-4': momiji('#d86a18', 'rgba(70,12,0,0.4)'),
+  'maple-5': momiji('#a83220', 'rgba(70,12,0,0.4)'),
+  'ginkgo-1': ginkgo('#e2a224', 'rgba(120,80,0,0.35)'),
+  'ginkgo-2': ginkgo('#dcb52e', 'rgba(120,80,0,0.35)'),
+  'leaf-1': oval('#c98a1e', 'rgba(80,40,0,0.4)'),
+  'leaf-2': oval('#9a5a22', 'rgba(60,25,0,0.4)'),
+  'leaf-3': oval('#b06a1c', 'rgba(70,30,0,0.4)'),
+  'petal-1': petal('#f3a9bf', '#fde9ef'),
+  'petal-2': petal('#f6c0d0', '#fff4f6'),
+  'petal-3': petal('#eb97b0', '#fbe0e8'),
+  'petal-4': petal('#f8cfdb', '#fffafb'),
+  'blossom': blossom,
+};
+const out = {};
+for (const [name, c] of Object.entries(SPRITES)) {
+  const url = c.toDataURL('image/png');
+  out[name] = url;
+  const f = document.createElement('figure'), a = document.createElement('a');
+  a.href = url; a.download = name + '.png';
+  a.append(c);
+  f.append(a, name);
+  document.getElementById('sheet').append(f);
+}
+document.getElementById('out').textContent = JSON.stringify(out);
+</script>
+</body>
+</html>

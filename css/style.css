@@ -1,0 +1,152 @@
+:root {
+  --paper: #f3ecdf;
+  --seal: #c23a2b;
+  --ink: #2a2420;
+  --latin: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #14110f;
+  color: var(--paper);
+  font-family: var(--latin);
+}
+
+canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+#sprites { pointer-events: none; }
+#scene { cursor: pointer; }
+
+/* ---- where we are (top left) and the time in Berlin (top right) ---- */
+#place, #clock {
+  position: fixed;
+  top: max(18px, env(safe-area-inset-top));
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.6em;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  color: var(--paper);
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.55), 0 1px 2px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  user-select: none;
+}
+#place { left: max(20px, env(safe-area-inset-left)); }
+#clock { right: max(20px, env(safe-area-inset-right)); }
+#place .label, #clock .label {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+#place .label {
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+}
+#place .name {
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+/* ---- the painter's seal, and the card it opens ---- */
+.defs { position: absolute; width: 0; height: 0; }
+#seal {
+  position: fixed;
+  right: max(22px, env(safe-area-inset-right));
+  bottom: max(22px, env(safe-area-inset-bottom));
+  width: 120px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  background: none;
+  opacity: 0.9;
+  transform: rotate(-3deg);
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+#seal::before {                          /* the inked block, with the carved frame; the stamp's unevenness is only here */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+  background: var(--seal);
+  box-shadow: inset 0 0 0 3px var(--seal), inset 0 0 0 4.5px rgba(251, 239, 226, 0.9);
+  filter: url(#stamp);
+}
+#seal .mark {
+  position: absolute;
+  inset: 9px 12px;
+  background: #fbefe2;
+  -webkit-mask: url(../assets/starsbit-black-cropped.svg) center / contain no-repeat;
+  mask: url(../assets/starsbit-black-cropped.svg) center / contain no-repeat;
+}
+#seal:hover, #seal[aria-expanded="true"] { opacity: 1; transform: rotate(-3deg) scale(1.05); }
+#seal:focus-visible { outline: 1px solid var(--paper); outline-offset: 4px; }
+
+#about {
+  position: fixed;
+  right: max(22px, env(safe-area-inset-right));
+  bottom: calc(max(22px, env(safe-area-inset-bottom)) + 66px);
+  width: min(350px, calc(100vw - 32px));
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+  padding: 22px 24px 18px;
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 3px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
+  font-size: 14.5px;
+  line-height: 1.55;
+  outline: none;
+  animation: unfold 0.25s ease;
+}
+#about[hidden] { display: none; }
+#about .logo { display: block; width: 170px; height: auto; margin: 2px 0 14px; }
+#about p { margin: 0 0 10px; }
+#about .who { font-size: 16px; letter-spacing: 0.04em; }
+#about h2 {
+  margin: 16px 0 6px;
+  font-size: 11px;
+  font-weight: normal;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(42, 36, 32, 0.6);
+}
+#about a { color: #9c2c20; text-decoration: none; border-bottom: 1px solid rgba(156, 44, 32, 0.3); }
+#about a:hover, #about a:focus-visible { border-bottom-color: currentColor; outline: none; }
+#about .links { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 0; padding: 0; list-style: none; }
+#about .colophon {
+  margin: 18px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid rgba(42, 36, 32, 0.15);
+  font-size: 12px;
+  color: rgba(42, 36, 32, 0.65);
+}
+@keyframes unfold { from { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) {
+  #seal, #about { transition: none; animation: none; }
+}
+
+.note {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 24px;
+  text-align: center;
+}

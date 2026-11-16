@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>starsbit.space</title>
+<meta name="description" content="A painting of Hinamizawa that never dries, in the season and at the hour it is in Berlin.">
+<meta name="theme-color" content="#14110f">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="scene" role="img" aria-label="A painting of the village of Hinamizawa, repainted as you watch"></canvas>
+<canvas id="sprites" aria-hidden="true"></canvas>
+
+<p id="place" aria-live="polite"><span class="label" lang="ja"></span><span class="name"></span></p>
+<p id="clock"><span class="label">Germany</span><time></time></p>
+
+<!-- the painter's seal, bottom right; it opens a card about who made this -->
+<button id="seal" type="button" aria-expanded="false" aria-controls="about" aria-label="About starsbit"><span class="mark"></span></button>
+<section id="about" aria-label="About starsbit" tabindex="-1" hidden>
+  <img class="logo" src="assets/starsbit-black-cropped.svg" alt="starsbit" width="200" height="62">
+  <p class="who"><strong>stars</strong> // starsbit</p>
+  <p>Software and machine learning engineer, currently working in the <strong>space</strong> domain.</p>
+  <h2>Projects</h2>
+  <ul class="links">
+    <li><a href="https://pc.starsbit.space/" target="_blank" rel="noopener">pc.starsbit.space</a></li>
+  </ul>
+  <h2>Elsewhere</h2>
+  <ul class="links">
+    <li><a href="https://github.com/starsbit" target="_blank" rel="noopener">GitHub</a></li>
+    <li><a href="https://x.com/starsbit1" target="_blank" rel="noopener">X</a></li>
+    <li><a href="https://ko-fi.com/starsbit" target="_blank" rel="noopener">Ko-fi</a></li>
+    <li><a href="https://anilist.co/user/starsbit/" target="_blank" rel="noopener">AniList</a></li>
+    <li><a href="https://steamcommunity.com/profiles/76561198162091272" target="_blank" rel="noopener">Steam</a></li>
+    <li><a href="https://discordid.netlify.app/?id=226376714974920704" target="_blank" rel="noopener">Discord</a></li>
+  </ul>
+  <p class="colophon">The painting shows Hinamizawa in the season and at the hour it is in Germany. Click it to walk on.<br>© <span class="year"></span> starsbit</p>
+</section>
+<svg class="defs" aria-hidden="true" focusable="false">
+  <!-- a stamp is never quite even: ragged edges and a few spots the ink missed -->
+  <filter id="stamp" x="-10%" y="-10%" width="120%" height="120%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.45" numOctaves="2" seed="7" result="noise"/>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.6" xChannelSelector="R" yChannelSelector="G" result="ragged"/>
+    <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -9 6.2" result="ink"/>
+    <feComposite in="ragged" in2="ink" operator="in"/>
+  </filter>
+</svg>
+
+<noscript><p class="note">These paintings are painted by a script; they need JavaScript to appear.</p></noscript>
+
+<script src="js/scenes.js"></script>
+<script src="js/painting.js"></script>
+</body>
+</html>
