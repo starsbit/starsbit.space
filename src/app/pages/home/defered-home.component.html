@@ -1,7 +1,0 @@
-@defer (on immediate) { @if (loadingService.isLoading() | async) {
-<stars-loading></stars-loading>
-} @else {
-<stars-home></stars-home>
-} } @loading (after 100ms; minimum 500ms) {
-<stars-loading></stars-loading>
-}
