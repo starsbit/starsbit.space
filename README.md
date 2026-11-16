@@ -32,3 +32,11 @@ browser and click one to save it, or write them all at once with a headless
 Chrome or Chromium (set `$CHROME` if it is not found):
 
     python3 tools/build_sprites.py
+
+## Hosting
+
+The site runs on the homelab k3s cluster "shipyard" (`Dockerfile` + `deploy/nginx.conf`, unprivileged nginx on
+:8080, `/healthz`) and is published through a Cloudflare Tunnel. A push to `master` is deployed automatically
+within a few minutes once the `docker-image` check has passed.
+
+    docker build -t starsbit-space . && docker run -p 8080:8080 starsbit-space
