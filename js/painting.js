@@ -229,7 +229,6 @@ function resize() {
   for (const c of [canvas, top]) { c.width = Math.round(W * dpr); c.height = Math.round(H * dpr); }
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   tctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.lineCap = 'butt';                                                        // bristles end square, not in blobs
   ctx.fillStyle = state.time === 'night' ? '#10131d' : state.time === 'dusk' ? '#4a3836' : '#d9d2c2';   // bare paper
   ctx.fillRect(0, 0, W, H);
   flakes.length = 0;
@@ -353,10 +352,18 @@ function lay(x, y, ca, sa, len, size, r, g, b) {
   // a point on the stroke: s along it (0 to 1), o across it, the whole bowed a little
   const px = (s, o) => x0 + dx * s + nx * (o + bend * 4 * s * (1 - s));
   const py = (s, o) => y0 + dy * s + ny * (o + bend * 4 * s * (1 - s));
-  const curve = (s0, s1, o) => {                                               // a bristle's path, as one curve through its middle
-    const sm = (s0 + s1) / 2, ax = px(s0, o), ay = py(s0, o), bx = px(s1, o), by = py(s1, o);
+  // A bristle's streak, th wide: a thin ribbon between two curves either side of its path, filled.
+  // It is the same as stroking the path with a line th wide and square ends, but Firefox draws a
+  // filled shape quickly and a stroked line slowly (some thirty times slower: the strokes alone held
+  // it to 16 frames a second, and the falling leaves stuttered).
+  const curve = (s0, s1, o, th) => {
+    const sm = (s0 + s1) / 2, u = o + th / 2, v = o - th / 2;
+    const ax = px(s0, u), ay = py(s0, u), bx = px(s1, u), by = py(s1, u), cx = px(s1, v), cy = py(s1, v), ex = px(s0, v), ey = py(s0, v);
     ctx.moveTo(ax, ay);
-    ctx.quadraticCurveTo(2 * px(sm, o) - (ax + bx) / 2, 2 * py(sm, o) - (ay + by) / 2, bx, by);
+    ctx.quadraticCurveTo(2 * px(sm, u) - (ax + bx) / 2, 2 * py(sm, u) - (ay + by) / 2, bx, by);
+    ctx.lineTo(cx, cy);
+    ctx.quadraticCurveTo(2 * px(sm, v) - (cx + ex) / 2, 2 * py(sm, v) - (cy + ey) / 2, ex, ey);
+    ctx.closePath();
   };
   const wide = Math.max(1.4, size * 0.9), half = wide / 2;
   const n = clamp(Math.round(wide / 1.6), 3, MAXB), sp = wide / n;
@@ -383,13 +390,13 @@ function lay(x, y, ca, sa, len, size, r, g, b) {
     const lit = 2 * e * facing + (Math.random() - 0.5) * 0.9;                  // the side it is on, and some streaks of its own
     BR[i * 4 + 3] = lit < -0.35 ? 0 : lit > 0.35 ? 2 : 1;
   }
-  ctx.lineWidth = Math.max(0.6, sp * 0.62);
+  const th = Math.max(0.6, sp * 0.62);
   for (let side = 0; side < 3; side++) {                                       // away from the light, the middle, towards it
     ctx.globalAlpha = side === 1 ? 0.6 : 0.72;
-    ctx.strokeStyle = tone(r, g, b, side === 0 ? -body * 1.3 : side === 2 ? body : (Math.random() - 0.5) * 0.08);
+    ctx.fillStyle = tone(r, g, b, side === 0 ? -body * 1.3 : side === 2 ? body : (Math.random() - 0.5) * 0.08);
     ctx.beginPath();
-    for (let i = 0; i < n; i++) if (BR[i * 4 + 3] === side) curve(BR[i * 4 + 1], BR[i * 4 + 2], BR[i * 4]);
-    ctx.stroke();
+    for (let i = 0; i < n; i++) if (BR[i * 4 + 3] === side) curve(BR[i * 4 + 1], BR[i * 4 + 2], BR[i * 4], th);
+    ctx.fill();
   }
 
   // the lip of the stroke that catches the light, and the shadow it throws on the other side
@@ -397,13 +404,12 @@ function lay(x, y, ca, sa, len, size, r, g, b) {
   if (size < U * 0.45 || f < 0.2 || len < wide * 1.7) return;                 // a short dab has no ridge worth the name
   const toward = facing > 0 ? 1 : -1;
   ctx.globalAlpha = 0.6 * f;
-  ctx.strokeStyle = tone(r, g, b, body * 2.4);
-  ctx.lineWidth = Math.max(0.6, sp * 0.4);
-  ctx.beginPath(); curve(0.06, full * (0.6 + Math.random() * 0.35), toward * half * 0.8); ctx.stroke();
+  ctx.fillStyle = tone(r, g, b, body * 2.4);
+  ctx.beginPath(); curve(0.06, full * (0.6 + Math.random() * 0.35), toward * half * 0.8, Math.max(0.6, sp * 0.4)); ctx.fill();
   ctx.globalAlpha = 0.4 * f;
-  ctx.strokeStyle = tone(r, g, b, -body * 2.6);
-  ctx.lineWidth = Math.max(0.7, sp * 0.5);
-  ctx.beginPath(); curve(0.1, full * (0.7 + Math.random() * 0.3), -toward * (half + ctx.lineWidth * 0.4)); ctx.stroke();
+  ctx.fillStyle = tone(r, g, b, -body * 2.6);
+  const shade = Math.max(0.7, sp * 0.5);
+  ctx.beginPath(); curve(0.1, full * (0.7 + Math.random() * 0.3), -toward * (half + shade * 0.4), shade); ctx.fill();
 }
 
 // ---------- what really moves ----------
@@ -525,13 +531,15 @@ function sprites(t, dt) {
 // The brush gives way to the frame rate: when frames come late (a slow machine, a large screen, a busy
 // browser) it lays fewer strokes until they come on time again, so what falls and flickers on top never
 // stutters; the picture only takes a little longer.  On time means close to the display's own beat,
-// learnt from the frames that were (a sixtieth of a second, or less on a faster display).
-let last = 0, beat = 1 / 60, ease = 1;
+// learnt from the frames that were (a sixtieth of a second, or less on a faster display).  Only frames
+// that keep coming late count: the odd slow one, as when a picture has just been loaded, does not.
+let last = 0, beat = 1 / 60, ease = 1, behind = 0;
 function frame(ms) {
   const raw = (ms - last) / 1000, dt = Math.min(0.05, raw || 0.016);
   if (last && raw > 0 && raw < 0.25) {                                         // not the first frame, nor one after the tab was away
     if (raw < beat * 1.25) beat += (raw - beat) * 0.1;
-    ease = raw > beat * 1.5 ? Math.max(0.25, ease * 0.85) : Math.min(1, ease + 0.01);
+    behind += ((raw > beat * 1.5 ? 1 : 0) - behind) * 0.05;                    // the share of late frames, over the last twenty or so
+    ease = behind > 0.3 ? Math.max(0.25, ease * 0.97) : Math.min(1, ease + 0.003);
   }
   last = ms; clock += dt;
   if (scene) {
