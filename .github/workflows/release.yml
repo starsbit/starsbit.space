@@ -1,0 +1,22 @@
+# Pushing a version tag (v1.2.3) makes a GitHub release of it, with notes generated from the pull requests
+# and commits since the tag before.  The production image has to build and pass its smoke test first.
+name: release
+on:
+  push:
+    tags: ['v[0-9]+.[0-9]+.[0-9]+']
+
+jobs:
+  docker-image:
+    uses: ./.github/workflows/docker-image.yml
+
+  release:
+    needs: docker-image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --title "$TAG" --generate-notes --verify-tag

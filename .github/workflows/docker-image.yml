@@ -1,10 +1,12 @@
 # Builds the production image (Dockerfile) so a broken image never reaches the homelab cluster, which deploys a
-# master commit only after these checks pass (pull-based autobuild on k3s "shipyard").
+# master commit only after these checks pass (pull-based autobuild on k3s "shipyard").  The release workflow
+# runs it too, before it makes a release of a version tag.
 name: docker-image
 on:
   push:
     branches: [master]
   pull_request:
+  workflow_call:
 
 jobs:
   docker-image:
