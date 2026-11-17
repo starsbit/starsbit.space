@@ -11,8 +11,10 @@ It is a static site (`index.html`, `css/`, `js/`, `assets/paintings/`) and needs
 a web server: opened straight from disk, browsers refuse to let a canvas read
 the pictures.
 
-A click on the painting (or the right arrow, space or enter) goes on to the next
-place, in the order of `js/scenes.js`, and from the last back to the first.
+A click on the painting, or on the arrow at its right side (or the right arrow
+key, space or enter), goes on to the next place; the arrow on the left side (or
+the left arrow key) goes back to the one before. They go round in the order of
+`js/scenes.js`: from the last on to the first, and from the first back to the last.
 A link can name the place: `#furude-shrine` (`overlook`, `hojo-residence`, `hinamizawa-estate`, `furude-shrine`).
 
 ## Repainting the seasons

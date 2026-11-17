@@ -544,9 +544,10 @@ function tick() {
 }
 
 // ---------- going round: a click (or a key) takes you on to the next place, and from the last back to the first ----------
-function next() {
-  const i = PLACES.findIndex(p => p.id === state.place);
-  location.hash = PLACES[(i + 1) % PLACES.length].id;
+// The arrows at the sides go either way: the one on the left back to the place before.
+function next(step = 1) {
+  const i = PLACES.findIndex(p => p.id === state.place), n = PLACES.length;
+  location.hash = PLACES[(i + step + n) % n].id;
 }
 
 // ---------- music: off until asked for, and then only quietly, in the background ----------
@@ -620,9 +621,15 @@ almanac.addEventListener('click', e => {
 canvas.addEventListener('click', () => { if (reading()) card(false); else next(); });   // a click beside the card only puts it away
 window.addEventListener('keydown', e => {
   if (e.key === 'Escape' && reading()) { card(false); logo.focus(); return; }
-  if (e.target.closest && e.target.closest('a, button, #about')) return;                       // keys meant for a link or a button
-  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') { e.preventDefault(); next(); }
+  const t = e.target.closest ? e.target : null, walk = t && t.closest('.walk');
+  if (!walk && t && t.closest('a, button, #about')) return;                                   // keys meant for a link, a button or the card
+  // on one of the arrows, space and enter are its own click; the arrow keys work wherever
+  if (e.key === 'ArrowRight' || (!walk && (e.key === ' ' || e.key === 'Enter'))) { e.preventDefault(); next(); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); next(-1); }
 });
+for (const [id, step] of [['prev', -1], ['next', 1]]) {
+  document.getElementById(id).addEventListener('click', () => { if (reading()) card(false); next(step); });
+}
 function go() {
   const id = location.hash.replace(/^#\/?/, '').split('/')[0];
   if (id === state.place || !PLACES.some(p => p.id === id)) return;
