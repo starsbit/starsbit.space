@@ -36,27 +36,32 @@ const rng = seed => () => {
 const ZONE = 'Europe/Berlin';
 const berlinMonth = new Intl.DateTimeFormat('en-GB', { timeZone: ZONE, month: 'numeric' });
 
-// How high the sun stands over Berlin right now, in degrees (a low-precision solar position, good to
-// a fraction of a degree, which is a minute or two of the clock).
+// Where the sun stands over Berlin right now (a low-precision solar position, good to a fraction of a
+// degree, which is a minute or two of the clock): how high, in degrees, and how many hours it is from
+// solar midnight, when it is lowest (a little after midnight on the clock, in Berlin).
 const DEG = Math.PI / 180, LAT = 52.52, LON = 13.405;
-function sunHeight(ms) {
+function sun(ms) {
   const d = ms / 864e5 - 10957.5;                                              // days since 2000-01-01 12:00 UTC
   const g = (357.529 + 0.98560028 * d) * DEG, q = 280.459 + 0.98564736 * d;  // mean anomaly, mean longitude
   const L = (q + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)) * DEG, e = (23.439 - 3.6e-7 * d) * DEG;
   const ra = Math.atan2(Math.cos(e) * Math.sin(L), Math.cos(L)) / DEG, dec = Math.asin(Math.sin(e) * Math.sin(L));
-  const ha = (280.46061837 + 360.98564736629 * d + LON - ra) * DEG;           // hour angle
-  return Math.asin(Math.sin(LAT * DEG) * Math.sin(dec) + Math.cos(LAT * DEG) * Math.cos(dec) * Math.cos(ha)) / DEG;
+  const ha = 280.46061837 + 360.98564736629 * d + LON - ra;                    // hour angle, in degrees
+  return {
+    height: Math.asin(Math.sin(LAT * DEG) * Math.sin(dec) + Math.cos(LAT * DEG) * Math.cos(dec) * Math.cos(ha * DEG)) / DEG,
+    fromMidnight: Math.abs(((ha % 360) + 360) % 360 - 180) / 15,
+  };
 }
-// Day while the sun is more than 8° up; dusk (and dawn) while it is low or just under, golden hour and
-// twilight; night once it is more than 8° down.  In Berlin that gives each of the three at least
-// three and a half hours on every day of the year: dusk between 3.5 and 4.8 hours, day and night
-// never under 4.6.
-const LOW = 8;
+// Night is the plainest of the three pictures, day and dusk have the colours, so night is kept short:
+// it is only the four hours around solar midnight (about 22:00 to 02:00 in winter, 23:00 to 03:00
+// in summer), and only if the sun is well under (8°) by then.  Day is while the sun is more than 2°
+// up; all the rest is dusk, the evening drawn out long in winter.  In Berlin that gives night 4 hours
+// all year, day 7 (December) to 16 (June), and dusk 13 (December) down to 4 (June).
+const DAY = 2, DARK = -8, NIGHT = 2;
 function berlinScene() {
-  const m = +berlinMonth.format(new Date()) - 1, h = sunHeight(Date.now());
+  const m = +berlinMonth.format(new Date()) - 1, { height: h, fromMidnight } = sun(Date.now());
   return {
     season: m < 2 || m === 11 ? 'winter' : m < 5 ? 'spring' : m < 8 ? 'summer' : 'autumn',
-    time: h > LOW ? 'day' : h > -LOW ? 'dusk' : 'night',
+    time: h > DAY ? 'day' : h < DARK && fromMidnight < NIGHT ? 'night' : 'dusk',
   };
 }
 const state = (() => {

@@ -2,7 +2,7 @@
 
 Four paintings of Hinamizawa that never dry. A canvas is brushed over, stroke by
 stroke, with what the place looks like in the season and at the hour it is in
-Berlin right now (day, dusk or night follow how high the sun stands over Berlin). The
+Berlin right now (day while the sun is up, night only for the four hours around solar midnight, dusk in between). The
 time in Berlin is shown in the top right.
 
     python3 -m http.server        # then open http://localhost:8000
