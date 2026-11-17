@@ -173,7 +173,36 @@ function grade(place, season, time, base, mask) {
       det[i] = Math.min(1, Math.hypot(gx, gy) * 1.6);
     }
   }
-  return { place, season, time, w, h, col, ang, det, sky: mask.sky, veg: mask.veg, water: mask.water, stars };
+
+  // Where the shapes are: the outlines of things (a roof against the snow, the ridge against the sky),
+  // found in the picture a little blurred so the grain of leaves and snow does not count, and measured
+  // against this picture's own contrast, so a grey winter has as many as a green summer.  A share of the
+  // strokes goes to these from the start, so the picture can be read long before it is finished.
+  const soft = lum.slice(), tmp = new Float32Array(n);
+  for (let pass = 0; pass < 2; pass++) {                                       // a box blur, twice: nearly a gaussian
+    for (let y = 0; y < h; y++) for (let x = 0, i = y * w; x < w; x++, i++) {
+      tmp[i] = (soft[y * w + Math.max(0, x - 2)] + soft[y * w + Math.max(0, x - 1)] + soft[i] + soft[y * w + Math.min(w - 1, x + 1)] + soft[y * w + Math.min(w - 1, x + 2)]) / 5;
+    }
+    for (let y = 0; y < h; y++) for (let x = 0, i = y * w; x < w; x++, i++) {
+      soft[i] = (tmp[Math.max(0, y - 2) * w + x] + tmp[Math.max(0, y - 1) * w + x] + tmp[i] + tmp[Math.min(h - 1, y + 1) * w + x] + tmp[Math.min(h - 1, y + 2) * w + x]) / 5;
+    }
+  }
+  const edge = new Float32Array(n), hist = new Uint32Array(512);
+  for (let y = 1; y < h - 1; y++) {
+    for (let x = 1; x < w - 1; x++) {
+      const i = y * w + x, m = Math.hypot(soft[i + 1] - soft[i - 1], soft[i + w] - soft[i - w]);
+      edge[i] = m;
+      hist[Math.min(511, m * 1024 | 0)]++;
+    }
+  }
+  const level = q => { for (let k = 0, s = 0; k < 512; k++) if ((s += hist[k]) >= q * n) return (k + 0.5) / 1024; return 0.5; };
+  const lo = level(0.6), hi = Math.max(lo + 0.004, level(0.94));
+  let many = 0;
+  for (let i = 0; i < n; i++) { edge[i] = clamp((edge[i] - lo) / (hi - lo), 0, 1); if (edge[i] > 0.5) many++; }
+  const spots = new Uint32Array(many);
+  for (let i = 0, k = 0; i < n; i++) if (edge[i] > 0.5) spots[k++] = i;
+
+  return { place, season, time, w, h, col, ang, det, edge, spots, sky: mask.sky, veg: mask.veg, water: mask.water, stars };
 }
 
 // ---------- the canvases ----------
@@ -182,7 +211,7 @@ const top = document.getElementById('sprites'), tctx = top.getContext('2d');
 let W = 0, H = 0, U = 10, dpr = 1;
 let scene = null;                        // what the brush is looking at
 let view = { s: 1, ox: 0, oy: 0 };       // where the picture lies on the screen
-let changedAt = 0, clock = 0, owed = 0;
+let changedAt = 0, clock = 0, owed = 0, sharp = 0;
 
 const viewOf = sc => {
   const s = Math.max(W / sc.w, H / sc.h), [fx, fy] = sc.place.focus;
@@ -241,13 +270,22 @@ function wind(t, sx, sy) {
 }
 
 let spot = 0;
-function stroke(t, age, settled, sc, ctx, view) {
+function stroke(t, age, settled, sc, ctx, view, keen) {
   const w = sc.w, h = sc.h;
   // Where: the next point of a low-discrepancy sequence (R2), so the strokes spread evenly over the
   // canvas and no spot is left unpainted by chance, nudged a little so they never fall in a pattern.
-  spot = (spot + 1) % 1e9;
-  const x = (((0.5 + spot * 0.7548776662466927) % 1) + (Math.random() - 0.5) * 0.004) * W;
-  const y = (((0.5 + spot * 0.5698402909980532) % 1) + (Math.random() - 0.5) * 0.004) * H;
+  // A keen stroke goes to one of the outlines instead, if that is on the screen.
+  let x = -1, y = -1;
+  if (keen && sc.spots.length) {
+    const k = sc.spots[Math.random() * sc.spots.length | 0];
+    x = view.ox + (k % w + Math.random()) * view.s; y = view.oy + ((k / w | 0) + Math.random()) * view.s;
+  }
+  if (x < 0 || x >= W || y < 0 || y >= H) {
+    keen = false;
+    spot = (spot + 1) % 1e9;
+    x = (((0.5 + spot * 0.7548776662466927) % 1) + (Math.random() - 0.5) * 0.004) * W;
+    y = (((0.5 + spot * 0.5698402909980532) % 1) + (Math.random() - 0.5) * 0.004) * H;
+  }
   const sx = (x - view.ox) / view.s, sy = (y - view.oy) / view.s;
   const xi = clamp(sx | 0, 0, w - 1), yi = clamp(sy | 0, 0, h - 1), i = yi * w + xi;
   const veg = sc.veg[i] > 110, sky = sc.sky[i] > 128, water = sc.water[i] > 110;
@@ -277,15 +315,19 @@ function stroke(t, age, settled, sc, ctx, view) {
   else if (veg) a = Math.random() * Math.PI;
   else a = -0.3 + (Math.random() - 0.5) * 1.1;
   const rnd = Math.random();
-  const calm = smooth(3, 12, age);                                             // the longer it stands, the finer the work
-  let size = U * (0.42 + (1.9 - 1.0 * calm) * rnd * rnd * (1 + calm * (rnd - 1))) * broad(age);
+  // the longer it stands, the finer the work; the outlines are drawn finely from the first
+  const calm = keen ? Math.max(0.7, smooth(3, 12, age)) : smooth(3, 12, age);
+  let size = U * (0.42 + (1.9 - 1.0 * calm) * rnd * rnd * (1 + calm * (rnd - 1))) * (keen ? 1 + (broad(age) - 1) * 0.15 : broad(age));
   let len = size * (veg ? 1.1 + Math.random() : 1.6 + 1.8 * Math.random());
   const ca = Math.cos(a), sa = Math.sin(a);
   // keep the broad strokes off the fine things
   const ex = clamp((sx + ca * len * 0.5 / view.s) | 0, 0, w - 1), ey = clamp((sy + sa * len * 0.5 / view.s) | 0, 0, h - 1);
   const fx = clamp((sx - ca * len * 0.5 / view.s) | 0, 0, w - 1), fy = clamp((sy - sa * len * 0.5 / view.s) | 0, 0, h - 1);
   const d = Math.max(d0, sc.det[ey * w + ex], sc.det[fy * w + fx]);
-  const fine = 1 - 0.72 * smooth(0.05, 0.5, d) * smooth(0.5, 6, age);          // loose at first, careful later
+  const e = Math.max(sc.edge[i], sc.edge[ey * w + ex], sc.edge[fy * w + fx]);
+  // loose at first, careful later; and a broad stroke that would run across an outline is kept narrow,
+  // so it does not smear away what the keen ones have drawn
+  const fine = (1 - 0.72 * smooth(0.05, 0.5, d) * smooth(0.5, 6, age)) * (keen ? 1 : 1 - 0.55 * e * (1 - calm));
   size *= fine; len *= fine;
 
   lay(x, y, ca, sa, len, size, r, g, b);
@@ -480,9 +522,17 @@ function sprites(t, dt) {
 }
 
 // ---------- every frame ----------
-let last = 0;
+// The brush gives way to the frame rate: when frames come late (a slow machine, a large screen, a busy
+// browser) it lays fewer strokes until they come on time again, so what falls and flickers on top never
+// stutters; the picture only takes a little longer.  On time means close to the display's own beat,
+// learnt from the frames that were (a sixtieth of a second, or less on a faster display).
+let last = 0, beat = 1 / 60, ease = 1;
 function frame(ms) {
-  const dt = Math.min(0.05, (ms - last) / 1000 || 0.016);
+  const raw = (ms - last) / 1000, dt = Math.min(0.05, raw || 0.016);
+  if (last && raw > 0 && raw < 0.25) {                                         // not the first frame, nor one after the tab was away
+    if (raw < beat * 1.25) beat += (raw - beat) * 0.1;
+    ease = raw > beat * 1.5 ? Math.max(0.25, ease * 0.85) : Math.min(1, ease + 0.01);
+  }
   last = ms; clock += dt;
   if (scene) {
     const age = (clock - changedAt) * PACE, settled = age > 14;
@@ -491,9 +541,15 @@ function frame(ms) {
       // one many, so a new picture comes on at a walking pace and never as a flurry.
       // Larger screens get more strokes, for finer work; small ones never fewer than a 1280 x 720 one,
       // or a phone would be left with gaps.
+      // The outlines get fine strokes of their own from a moment after the first broad ones, but only out
+      // of what the brush can spare: never more strokes in a frame than at its busiest without them, and
+      // once the picture stands, a sixth of the same number it always had.
       const steady = clamp(W * H / 4200, 220, 420), b = broad(age);
-      const count = steady * (settled ? 0.6 : PACE * (0.2 + 0.8 * smooth(2, 12, age)) / (b * b));
-      for (owed = Math.min(owed + count * dt * 60, 600); owed >= 1; owed--) stroke(clock, age, settled, scene, ctx, view);
+      let count = steady * (settled ? 0.6 : PACE * (0.2 + 0.8 * smooth(2, 12, age)) / (b * b)), keen;
+      if (settled) { keen = count / 6; count -= keen; }
+      else keen = Math.min(steady * 0.4 * smooth(0.4, 3, age), Math.max(0, steady * PACE - count));
+      for (owed = Math.min(owed + count * ease * dt * 60, 600); owed >= 1; owed--) stroke(clock, age, settled, scene, ctx, view, false);
+      for (sharp = Math.min(sharp + keen * ease * dt * 60, 300); sharp >= 1; sharp--) stroke(clock, age, settled, scene, ctx, view, true);
       ctx.globalAlpha = 1;
     }
     sprites(clock, dt);
