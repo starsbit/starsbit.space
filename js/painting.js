@@ -580,15 +580,27 @@ function sound(on) {
 }
 music.addEventListener('click', () => sound(music.getAttribute('aria-pressed') !== 'true'));
 
-// ---------- the seal, and the card about who painted this ----------
-const seal = document.getElementById('seal'), about = document.getElementById('about');
+// ---------- the logo, and the card about who painted this ----------
+// The card is put away with a little ceremony (see #about in the style sheet), so it is only hidden
+// once that is over; until then it counts as closed already.
+const logo = document.getElementById('logo'), about = document.getElementById('about');
 about.querySelector('.year').textContent = new Date().getFullYear();
+const reading = () => about.classList.contains('open');
+let putting = 0;
 function card(open) {
-  about.hidden = !open;
-  seal.setAttribute('aria-expanded', open);
-  if (open) about.focus({ preventScroll: true });
+  clearTimeout(putting);
+  logo.setAttribute('aria-expanded', open);
+  if (open) {
+    about.hidden = false;
+    about.getBoundingClientRect();                                             // let it be drawn rolled up first, so it unrolls
+    about.classList.add('open');
+    about.focus({ preventScroll: true });
+  } else {
+    about.classList.remove('open');
+    putting = setTimeout(() => { about.hidden = true; }, still ? 0 : 560);
+  }
 }
-seal.addEventListener('click', () => card(about.hidden));
+logo.addEventListener('click', () => card(!reading()));
 
 // ---------- the season and the hour, picked at the bottom ----------
 almanac.addEventListener('click', e => {
@@ -600,9 +612,9 @@ almanac.addEventListener('click', e => {
   tick();
 });
 
-canvas.addEventListener('click', () => { if (!about.hidden) card(false); else next(); });   // a click beside the card only puts it away
+canvas.addEventListener('click', () => { if (reading()) card(false); else next(); });   // a click beside the card only puts it away
 window.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && !about.hidden) { card(false); seal.focus(); return; }
+  if (e.key === 'Escape' && reading()) { card(false); logo.focus(); return; }
   if (e.target.closest && e.target.closest('a, button, #about')) return;                       // keys meant for a link or a button
   if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') { e.preventDefault(); next(); }
 });

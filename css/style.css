@@ -69,15 +69,14 @@ canvas {
   font-size: 13px;
 }
 
-/* ---- the season and the hour, bottom middle: written like the corners above ---- */
+/* ---- the season and the hour, bottom right: written like the corners above ---- */
 #almanac {
   position: fixed;
-  left: 50%;
+  right: max(13px, env(safe-area-inset-right));
   bottom: max(30px, env(safe-area-inset-bottom));
-  transform: translateX(-50%);
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   gap: 0 14px;
   width: max-content;
@@ -142,9 +141,9 @@ canvas {
 }
 #almanac .reset:disabled { visibility: hidden; }
 #almanac button:focus-visible { outline: 1px solid var(--paper); outline-offset: -2px; }
-/* where the bar no longer fits between the note and the seal, it goes above them, in two rows if need be */
-@media (max-width: 960px) {
-  #almanac { bottom: calc(max(22px, env(safe-area-inset-bottom)) + 70px); }
+/* where the bar no longer fits beside the note, it goes above it, in two rows if need be */
+@media (max-width: 760px) {
+  #almanac { bottom: calc(max(24px, env(safe-area-inset-bottom)) + 62px); }
   #almanac .choices + .choices::before { display: none; }
 }
 
@@ -186,48 +185,65 @@ canvas {
 @keyframes sway { 25% { transform: rotate(-6deg); } 75% { transform: rotate(6deg); } }
 @media (prefers-reduced-motion: reduce) { #music[aria-pressed="true"] .note { animation: none; } }
 
-/* ---- the painter's seal, and the card it opens ---- */
+/* ---- the logo in the middle, and the card it opens ---- */
 .defs { position: absolute; width: 0; height: 0; }
-#seal {
+#logo {                                  /* written in paper over the painting, like the corners */
   position: fixed;
-  right: max(22px, env(safe-area-inset-right));
-  bottom: max(22px, env(safe-area-inset-bottom));
-  width: 144px;
-  height: 58px;
+  left: 50%;
+  top: 50%;
+  width: min(380px, 62vw);
+  aspect-ratio: 2002.7 / 622.8;
   padding: 0;
   border: 0;
   background: none;
+  color: var(--paper);
   opacity: 0.9;
-  transform: rotate(-3deg);
+  translate: -50% -50%;
+  filter:                                /* a dark rim hugging the letters, then a softer glow so it lifts off a bright picture */
+    drop-shadow(0 0 1px rgba(0, 0, 0, 0.85))
+    drop-shadow(0 0 2.5px rgba(0, 0, 0, 0.6))
+    drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5))
+    drop-shadow(0 0 16px rgba(0, 0, 0, 0.4))
+    blur(0);
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.2s;
+  /* coming back: it waits for the card to roll up, then settles in */
+  transition: opacity 0.4s 0.25s, transform 0.55s 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2), filter 0.45s 0.2s;
   -webkit-tap-highlight-color: transparent;
 }
-#seal::before {                          /* the inked block, with the carved frame; the stamp's unevenness is only here */
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 3px;
-  background: var(--seal);
-  box-shadow: inset 0 0 0 3px var(--seal), inset 0 0 0 4.5px rgba(251, 239, 226, 0.9);
-  filter: url(#stamp);
-}
-#seal .mark {
-  position: absolute;
-  inset: 11px 14px;
-  background: #fbefe2;
+#logo .mark {                            /* the logo is a shape from assets/, filled with paper, a little ragged like a stamp */
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: currentColor;
   -webkit-mask: url(../assets/starsbit-black-cropped.svg) center / contain no-repeat;
   mask: url(../assets/starsbit-black-cropped.svg) center / contain no-repeat;
+  filter: url(#stamp);
 }
-#seal:hover, #seal[aria-expanded="true"] { opacity: 1; transform: rotate(-3deg) scale(1.05); }
-#seal:focus-visible { outline: 1px solid var(--paper); outline-offset: 4px; }
+#logo:hover { opacity: 1; transform: scale(1.03); transition-delay: 0s; transition-duration: 0.25s; }
+#logo:focus-visible { outline: 1px solid var(--paper); outline-offset: 12px; }
+#logo[aria-expanded="true"] {            /* going: it swells and dissolves into the card */
+  opacity: 0;
+  transform: scale(1.18);
+  filter:
+    drop-shadow(0 0 1px rgba(0, 0, 0, 0))
+    drop-shadow(0 0 2.5px rgba(0, 0, 0, 0))
+    drop-shadow(0 1px 3px rgba(0, 0, 0, 0))
+    drop-shadow(0 0 16px rgba(0, 0, 0, 0))
+    blur(8px);
+  pointer-events: none;
+  transition: opacity 0.35s, transform 0.45s cubic-bezier(0.3, 0, 0.2, 1), filter 0.4s;
+}
 
+/* The card unrolls out of the band the logo was written on: a thin, tilted strip of paper that opens
+   up and down, overshooting a little, and then what is written on it comes up line by line.  Put away,
+   the writing goes first and the paper rolls back up into the strip. */
 #about {
   position: fixed;
-  right: max(22px, env(safe-area-inset-right));
-  bottom: calc(max(22px, env(safe-area-inset-bottom)) + 76px);
-  width: min(350px, calc(100vw - 32px));
-  max-height: calc(100vh - 140px);
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  width: min(420px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
   overflow-y: auto;
   padding: 22px 24px 18px;
   background: var(--paper);
@@ -237,9 +253,34 @@ canvas {
   font-size: 14.5px;
   line-height: 1.55;
   outline: none;
-  animation: unfold 0.25s ease;
+  transform-origin: 50% 50%;
+  opacity: 0;
+  transform: rotate(-2.5deg) scale(0.86, 0.12);
+  pointer-events: none;
+  transition: transform 0.38s 0.12s cubic-bezier(0.5, 0, 0.75, 0), opacity 0.14s 0.38s;
+}
+#about.open {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  transition: transform 0.6s 0.08s cubic-bezier(0.2, 0.9, 0.25, 1.12), opacity 0.18s 0.08s;
 }
 #about[hidden] { display: none; }
+#about > * { opacity: 0; transform: translateY(8px); filter: blur(2px); transition: opacity 0.12s, transform 0.12s, filter 0.12s; }
+#about.open > * {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+  transition: opacity 0.4s, transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.4s;
+  transition-delay: calc(0.3s + var(--i, 0) * 0.05s);
+}
+#about > :nth-child(2) { --i: 1; }
+#about > :nth-child(3) { --i: 2; }
+#about > :nth-child(4) { --i: 3; }
+#about > :nth-child(5) { --i: 4; }
+#about > :nth-child(6) { --i: 5; }
+#about > :nth-child(7) { --i: 6; }
+#about > :nth-child(8) { --i: 7; }
 #about .logo { display: block; width: 170px; height: auto; margin: 2px 0 14px; }
 #about p { margin: 0 0 10px; }
 #about .who { font-size: 16px; letter-spacing: 0.04em; }
@@ -261,9 +302,8 @@ canvas {
   font-size: 12px;
   color: rgba(42, 36, 32, 0.65);
 }
-@keyframes unfold { from { opacity: 0; transform: translateY(8px); } }
 @media (prefers-reduced-motion: reduce) {
-  #seal, #about { transition: none; animation: none; }
+  #logo, #logo:hover, #logo[aria-expanded="true"], #about, #about.open, #about > *, #about.open > * { transition: none; }
 }
 
 .note {

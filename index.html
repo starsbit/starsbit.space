@@ -16,7 +16,10 @@
 <p id="place" aria-live="polite"><span class="label" lang="ja"></span><span class="name"></span></p>
 <p id="clock"><span class="label">Germany</span><time></time></p>
 
-<!-- the season and the hour, bottom middle: as they are in Germany, unless another is picked -->
+<!-- the logo, in the middle of the picture; it opens a card about who made this -->
+<button id="logo" type="button" aria-expanded="false" aria-controls="about" aria-label="About starsbit"><span class="mark"></span></button>
+
+<!-- the season and the hour, bottom right: as they are in Germany, unless another is picked -->
 <div id="almanac" role="group" aria-label="Season and hour">
   <div class="choices" role="group" aria-label="Season">
     <button type="button" data-season="spring" aria-pressed="false">Spring</button>
@@ -38,8 +41,6 @@
 </button>
 <audio id="tune" src="assets/You.mp3" loop preload="none"></audio>
 
-<!-- the painter's seal, bottom right; it opens a card about who made this -->
-<button id="seal" type="button" aria-expanded="false" aria-controls="about" aria-label="About starsbit"><span class="mark"></span></button>
 <section id="about" aria-label="About starsbit" tabindex="-1" hidden>
   <img class="logo" src="assets/starsbit-black-cropped.svg" alt="starsbit" width="200" height="62">
   <p class="who"><strong>stars</strong> // starsbit</p>
@@ -57,7 +58,7 @@
     <li><a href="https://steamcommunity.com/profiles/76561198162091272" target="_blank" rel="noopener">Steam</a></li>
     <li><a href="https://discord.com/users/226376714974920704" target="_blank" rel="noopener">Discord</a></li>
   </ul>
-  <p class="colophon">The painting shows Hinamizawa in the season and at the hour it is in Germany, unless you pick another at the bottom; a dot marks the one it really is. Click it to walk on.<br>© <span class="year"></span> starsbit</p>
+  <p class="colophon">The painting shows Hinamizawa in the season and at the hour it is in Germany, unless you pick another at the bottom right; a dot marks the one it really is. Click it to walk on.<br>© <span class="year"></span> starsbit</p>
 </section>
 <svg class="defs" aria-hidden="true" focusable="false">
   <!-- a stamp is never quite even: ragged edges and a few spots the ink missed -->
