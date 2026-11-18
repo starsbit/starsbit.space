@@ -34,8 +34,8 @@ lights and the street lamps; after changing only those, write just
 ## The evening cicadas
 
 With the music on, the higurashi are heard in the trees now and then: half a
-minute or so of them, then a minute to three of quiet, in any season, and all
-evening on a summer dusk. `assets/higurashi.mp3` is their sound from the game,
+minute or so of them, then a minute to three of quiet, by day and at dusk (not at
+night, and not in winter), and all evening on a summer dusk. `assets/higurashi.mp3` is their sound from the game,
 *Higurashi no Naku Koro ni*.
 
 ## Redrawing the falling leaves and blossoms

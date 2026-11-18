@@ -727,11 +727,12 @@ function next(step = 1) {
 // stays behind the painting.  It goes through Web Audio because iOS will not let a page set an
 // <audio>'s volume, and it fades in and out rather than starting and stopping.
 // With the music on, the higurashi, the evening cicadas, are heard in the trees now and then: half a
-// minute or so of them, then a minute to three of quiet, in any season; and all evening on a summer dusk,
+// minute or so of them, then a minute to three of quiet, by day and at dusk (never at night, nor in winter,
+// when they are not out); and all evening on a summer dusk,
 // their own hour (assets/higurashi.mp3, their sound from the game).  Their loop plays along unheard the
 // whole time the music is on and is only turned up and down, so it never has to be started without a click.
 const music = document.getElementById('music'), tune = document.getElementById('tune'), cicadas = document.getElementById('cicadas');
-const QUIET = 0.2, CICADAS = 0.2;                                           // the cicadas a little under the piano
+const QUIET = 0.2, CICADAS = 0.05;                                          // the cicadas well under the piano: only ambience
 let audio = null, gain = null, cgain = null, singing = false, spell = 0;
 const fade = (g, to, seconds) => {
   const t = audio.currentTime;
@@ -748,7 +749,8 @@ function sing(want) {
 // on a click of the music, and whenever the picture changes
 function chorus() {
   const on = music.getAttribute('aria-pressed') === 'true', evening = !!scene && scene.season === 'summer' && scene.time === 'dusk';
-  if (!on || evening) { clearTimeout(spell); spell = 0; sing(on && evening); return; }
+  const asleep = !scene || scene.time === 'night' || scene.season === 'winter';   // not after dark, and not in the cold
+  if (!on || asleep || evening) { clearTimeout(spell); spell = 0; sing(on && evening); return; }
   if (!spell) spell = setTimeout(turn, (singing ? 20 + Math.random() * 20 : 8 + Math.random() * 25) * 1000);   // the first soon after the music starts
 }
 function turn() {
