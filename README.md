@@ -25,7 +25,18 @@ The season pictures are made from the summer photographs in `assets/source/`:
     python3 tools/build_paintings.py
 
 The roofs, the pond and the ground of each place are outlined by hand at the top
-of that script; the colours of each season are mixed further down.
+of that script; the colours of each season are mixed further down. So are the
+lights and the street lamps; after changing only those, write just
+`js/scenes.js` and leave the pictures as they are:
+
+    python3 tools/build_paintings.py --scenes
+
+## The evening cicadas
+
+With the music on, the higurashi are heard in the trees now and then: half a
+minute or so of them, then a minute to three of quiet, in any season, and all
+evening on a summer dusk. `assets/higurashi.mp3` is a recording by Σ64
+(Wikimedia Commons, CC BY 4.0), cleaned up and made to loop.
 
 ## Redrawing the falling leaves and blossoms
 

@@ -7,5 +7,5 @@ COPY css /usr/share/nginx/html/css
 COPY js /usr/share/nginx/html/js
 COPY assets/paintings /usr/share/nginx/html/assets/paintings
 COPY assets/sprites /usr/share/nginx/html/assets/sprites
-COPY assets/*.svg assets/*.mp3 /usr/share/nginx/html/assets/
+COPY assets/*.svg assets/*.mp3 assets/favicon.ico /usr/share/nginx/html/assets/
 EXPOSE 8080

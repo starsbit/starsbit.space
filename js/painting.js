@@ -99,7 +99,7 @@ const loadMask = place => once(place.id, async () => {
 });
 
 // ---------- the hour: day as it is, dusk in orange, night in blue with the lamps lit ----------
-function grade(place, season, time, base, mask) {
+function grade(place, season, time, base, mask, festival = []) {
   const { w, h } = sizeOf(place), n = w * h;
   const col = new Uint8ClampedArray(n * 3);
   const lum = new Float32Array(n);
@@ -149,7 +149,7 @@ function grade(place, season, time, base, mask) {
       }
     }
   };
-  const glows = night || dusk ? light(place, w, h, base, mask, col, night ? 1 : 0.5) : [];
+  const glows = night || dusk ? light(place, w, h, base, mask, col, night ? 1 : 0.5, festival) : [];
   if (night) {
     const rand = rng(11 + PLACES.indexOf(place));
     if (place.moon && season !== 'winter') add(place.moon[0] * w, place.moon[1] * h, place.moon[2] * w, 7, 235, 228, 200, true);
@@ -210,7 +210,7 @@ function grade(place, season, time, base, mask) {
 const LIGHT = { warm: [1.0, 0.6, 0.28], pale: [1.0, 0.78, 0.5], cool: [0.78, 0.88, 1.0], flame: [1.0, 0.46, 0.16], street: [0.8, 0.93, 1.0] };
 const PANE = { warm: [1.0, 0.85, 0.55], pale: [1.0, 0.93, 0.76], cool: [0.9, 0.95, 1.0], flame: [1.0, 0.72, 0.36], street: [0.97, 1.0, 1.0] };
 
-function lightsOf(place, w, h) {
+function lightsOf(place, w, h, festival) {
   const rand = rng(29 + PLACES.indexOf(place)), out = [];
   for (const [x, y, r, kind = 'window'] of place.lights) {
     let tone = kind === 'lantern' ? 'flame' : 'warm', power = 1;
@@ -226,10 +226,12 @@ function lightsOf(place, w, h) {
     const tall = (foot - top) * h;
     out.push({ kind: 'lamp', x: x * w, y: top * h, foot: foot * h, tall, r: 0.3 * tall + 1.2, tone: 'street', power: 1 });
   }
+  const k = w / 2000;                                                          // the festival's lanterns are on the print
+  for (const [x, y, r] of festival) out.push({ kind: 'lantern', x: x * k, y: y * k, r: Math.max(1.2, r * k), tone: 'flame', power: 0.85 });
   return out;
 }
 
-function light(place, w, h, base, mask, col, f) {
+function light(place, w, h, base, mask, col, f, festival) {
   const n = w * h, L = new Float32Array(n * 3), G = new Float32Array(n * 3);
   const over = (cx, cy, R, fn) => {                                            // every pixel within a box about (cx, cy)
     for (let y = Math.max(0, cy - R | 0); y < Math.min(h, cy + R + 1); y++) {
@@ -237,7 +239,7 @@ function light(place, w, h, base, mask, col, f) {
     }
   };
   const into = (A, i, c, e) => { A[i * 3] += c[0] * e; A[i * 3 + 1] += c[1] * e; A[i * 3 + 2] += c[2] * e; };
-  const list = lightsOf(place, w, h);
+  const list = lightsOf(place, w, h, festival);
 
   for (const s of list) {
     const c = LIGHT[s.tone], k = f * s.power, R = s.r;
@@ -668,19 +670,28 @@ let asked = 0;
 async function show() {
   const mine = ++asked;
   const place = PLACES.find(p => p.id === state.place);
-  document.title = `${place.name} — starsbit.space`;
+  document.title = `${place.name} - starsbit.space`;
   where.querySelector('.label').textContent = place.kanji;
   where.querySelector('.name').textContent = place.name;
   try {
     const [base, mask] = await Promise.all([loadSeason(place, state.season), loadMask(place)]);
+    const festival = place.id === FESTIVAL.place && +berlinMonth.format(new Date()) === FESTIVAL.month ? FESTIVAL.lanterns : [];
     if (mine !== asked) return;
-    scene = grade(place, state.season, state.time, base, mask);
+    scene = grade(place, state.season, state.time, base, mask, festival);
     view = viewOf(scene);
     changedAt = clock;
+    chorus();
   } catch (e) {
     console.error(e);
   }
 }
+
+// Watanagashi, in June: paper lanterns hung along the shrine's front for the festival, lit from dusk.
+// Points are on the 2000 px wide print, as the lights in tools/build_paintings.py: x, y and radius.
+const FESTIVAL = {
+  place: 'furude-shrine', month: 6,
+  lanterns: [[450, 578, 15], [590, 580, 15], [730, 580, 15], [850, 580, 14], [1070, 580, 14], [1190, 580, 15], [1330, 580, 15], [1470, 578, 15]],
+};
 
 // A season or an hour can be picked by hand, at the bottom; whatever has not been picked goes on
 // following Berlin.  Nothing is remembered: every visit begins with the season and the hour as they are.
@@ -715,9 +726,35 @@ function next(step = 1) {
 // The recording is mastered loud (about -18 dB on average); at a fifth of full volume (-14 dB) the piano
 // stays behind the painting.  It goes through Web Audio because iOS will not let a page set an
 // <audio>'s volume, and it fades in and out rather than starting and stopping.
-const music = document.getElementById('music'), tune = document.getElementById('tune');
-const QUIET = 0.2;
-let audio = null, gain = null;
+// With the music on, the higurashi, the evening cicadas, are heard in the trees now and then: half a
+// minute or so of them, then a minute to three of quiet, in any season; and all evening on a summer dusk,
+// their own hour (assets/higurashi.mp3, recorded by Σ64, CC BY 4.0).  Their loop plays along unheard the
+// whole time the music is on and is only turned up and down, so it never has to be started without a click.
+const music = document.getElementById('music'), tune = document.getElementById('tune'), cicadas = document.getElementById('cicadas');
+const QUIET = 0.2, CICADAS = 0.35;
+let audio = null, gain = null, cgain = null, singing = false, spell = 0;
+const fade = (g, to, seconds) => {
+  const t = audio.currentTime;
+  g.cancelScheduledValues(t);
+  g.setValueAtTime(g.value, t);
+  g.linearRampToValueAtTime(to, t + seconds);
+};
+function sing(want) {
+  if (want === singing) return;
+  singing = want;
+  if (cgain) fade(cgain.gain, want ? CICADAS : 0, want ? 5 : 4);
+  else cicadas.volume = want ? CICADAS : 0;
+}
+// on a click of the music, and whenever the picture changes
+function chorus() {
+  const on = music.getAttribute('aria-pressed') === 'true', evening = !!scene && scene.season === 'summer' && scene.time === 'dusk';
+  if (!on || evening) { clearTimeout(spell); spell = 0; sing(on && evening); return; }
+  if (!spell) spell = setTimeout(turn, (singing ? 20 + Math.random() * 20 : 8 + Math.random() * 25) * 1000);   // the first soon after the music starts
+}
+function turn() {
+  sing(!singing);
+  spell = setTimeout(turn, (singing ? 25 + Math.random() * 25 : 60 + Math.random() * 120) * 1000);
+}
 function sound(on) {
   if (on && !audio) {
     const AC = window.AudioContext || window.webkitAudioContext;
@@ -726,10 +763,16 @@ function sound(on) {
       gain = audio.createGain();
       gain.gain.value = 0;
       audio.createMediaElementSource(tune).connect(gain).connect(audio.destination);
+      cgain = audio.createGain();
+      cgain.gain.value = 0;
+      audio.createMediaElementSource(cicadas).connect(cgain).connect(audio.destination);
     }
   }
+  if (!cgain) cicadas.volume = 0;
+  if (on) cicadas.play().catch(() => {}); else setTimeout(() => { if (music.getAttribute('aria-pressed') !== 'true') cicadas.pause(); }, 4100);
   music.setAttribute('aria-pressed', on);
   music.setAttribute('aria-label', on ? 'Mute music' : 'Play music');
+  chorus();
   if (gain) {
     const g = gain.gain, t = audio.currentTime;
     g.cancelScheduledValues(t);
