@@ -149,10 +149,7 @@ function grade(place, season, time, base, mask) {
       }
     }
   };
-  if (night || dusk) {
-    const f = night ? 1 : 0.5;
-    for (const [lx, ly, lr] of place.lights) add(lx * w, ly * h, Math.max(1.6, lr * w), 5, 250 * f, 170 * f, 70 * f, false);
-  }
+  const glows = night || dusk ? light(place, w, h, base, mask, col, night ? 1 : 0.5) : [];
   if (night) {
     const rand = rng(11 + PLACES.indexOf(place));
     if (place.moon && season !== 'winter') add(place.moon[0] * w, place.moon[1] * h, place.moon[2] * w, 7, 235, 228, 200, true);
@@ -202,7 +199,97 @@ function grade(place, season, time, base, mask) {
   const spots = new Uint32Array(many);
   for (let i = 0, k = 0; i < n; i++) if (edge[i] > 0.5) spots[k++] = i;
 
-  return { place, season, time, w, h, col, ang, det, edge, spots, sky: mask.sky, veg: mask.veg, water: mask.water, stars };
+  return { place, season, time, w, h, col, ang, det, edge, spots, sky: mask.sky, veg: mask.veg, water: mask.water, stars, glows };
+}
+
+// ---------- the lights after dark: what each one is, and what it throws its light on ----------
+// Away from the lights there is only the moon (in grade, above).  Near one, a surface takes that
+// light's colour times its own, so under a street lamp the grass is green again and the road grey,
+// fading back into the blue further off.  Each light also hangs a little glow in the air about itself,
+// shows its own pane or flame or bulb, and over water lays a streak down it where it is reflected.
+const LIGHT = { warm: [1.0, 0.6, 0.28], pale: [1.0, 0.78, 0.5], cool: [0.78, 0.88, 1.0], flame: [1.0, 0.46, 0.16], street: [0.8, 0.93, 1.0] };
+const PANE = { warm: [1.0, 0.85, 0.55], pale: [1.0, 0.93, 0.76], cool: [0.9, 0.95, 1.0], flame: [1.0, 0.72, 0.36], street: [0.97, 1.0, 1.0] };
+
+function lightsOf(place, w, h) {
+  const rand = rng(29 + PLACES.indexOf(place)), out = [];
+  for (const [x, y, r, kind = 'window'] of place.lights) {
+    let tone = kind === 'lantern' ? 'flame' : 'warm', power = 1;
+    const a = rand(), b = rand(), c = rand();
+    if (kind === 'house') {                     // a village at night: not every house is still up, nor are all lit alike
+      if (a < 0.35) continue;
+      tone = b < 0.18 ? 'cool' : b < 0.4 ? 'pale' : 'warm';
+      power = (0.65 + 0.5 * c) * (tone === 'cool' ? 0.7 : 1);
+    }
+    out.push({ kind: kind === 'lantern' ? 'lantern' : 'window', x: x * w, y: y * h, r: Math.max(1.2, r * w), tone, power });
+  }
+  for (const [x, top, foot] of place.lamps || []) {
+    const tall = (foot - top) * h;
+    out.push({ kind: 'lamp', x: x * w, y: top * h, foot: foot * h, tall, r: 0.3 * tall + 1.2, tone: 'street', power: 1 });
+  }
+  return out;
+}
+
+function light(place, w, h, base, mask, col, f) {
+  const n = w * h, L = new Float32Array(n * 3), G = new Float32Array(n * 3);
+  const over = (cx, cy, R, fn) => {                                            // every pixel within a box about (cx, cy)
+    for (let y = Math.max(0, cy - R | 0); y < Math.min(h, cy + R + 1); y++) {
+      for (let x = Math.max(0, cx - R | 0), i = y * w + x; x < Math.min(w, cx + R + 1); x++, i++) fn(i, x + 0.5 - cx, y + 0.5 - cy);
+    }
+  };
+  const into = (A, i, c, e) => { A[i * 3] += c[0] * e; A[i * 3 + 1] += c[1] * e; A[i * 3 + 2] += c[2] * e; };
+  const list = lightsOf(place, w, h);
+
+  for (const s of list) {
+    const c = LIGHT[s.tone], k = f * s.power, R = s.r;
+    if (s.kind === 'lamp') {
+      // a pool on the ground below, flattened by the distance it is seen from, and a little on what is near the lamp
+      const T = s.tall, rx = 1.1 * T + 1, ry = 0.4 * T + 0.6;
+      over(s.x, s.foot, rx * 2.2, (i, dx, dy) => into(L, i, c, k * 0.62 * Math.exp(-1.6 * ((dx / rx) ** 2 + (dy / ry) ** 2))));
+      over(s.x, s.y, T * 2, (i, dx, dy) => into(L, i, c, k * 0.25 * Math.exp(-(dx * dx + dy * dy) / (0.64 * T * T))));
+      over(s.x, s.y, R * 4, (i, dx, dy) => into(G, i, c, k * 0.5 * Math.exp(-(dx * dx + dy * dy) / (R * R))));
+    } else {
+      // a window or a lantern lights what is right about it, and a little, further off
+      over(s.x, s.y, R * 16, (i, dx, dy) => { const d = Math.hypot(dx, dy) / R; into(L, i, c, k * (0.9 * Math.exp(-d * d / 6.8) + 0.2 * Math.exp(-d / 6))); });
+      over(s.x, s.y, R * 4, (i, dx, dy) => into(G, i, c, k * 0.45 * Math.exp(-(dx * dx + dy * dy) / (2 * R * R))));
+    }
+    // over water: where the light is seen again, as far below the water's edge as the light stands above it,
+    // drawn out down the water and broken up by the ripples into bands
+    const cx = clamp(Math.round(s.x), 0, w - 1);
+    for (let y = Math.ceil((s.foot || s.y + R)); y < h; y++) {
+      if (mask.water[y * w + cx] < 128) continue;
+      const ym = y + (y - s.y) * 0.9, ly = Math.max(3, 0.3 * (ym - y)), wide = s.kind === 'lamp' ? 0.4 * s.tall + 1 : R * 0.9;
+      over(s.x, ym, Math.max(wide * 3, ly * 2.5), (i, dx, dy) => {
+        const yy = ym + dy, band = 0.55 + 0.45 * Math.sin(yy * 1.7 + Math.sin(yy * 0.53) * 2);
+        const sway = dx + Math.sin(yy * 0.9) * wide * 0.35;                  // each band pushed a little sideways
+        into(G, i, c, k * 0.38 * band * (mask.water[i] / 255) * Math.exp(-((sway / wide) ** 2) - ((dy / ly) ** 2)));
+      });
+      break;
+    }
+  }
+
+  // the light on things, by their own colour a little greyed, as colours are by lamplight (the sky is not
+  // lit), and the glow in the air
+  for (let i = 0; i < n; i++) {
+    const s = 1.1 * (1 - mask.sky[i] / 255), y = (0.299 * base[i * 4] + 0.587 * base[i * 4 + 1] + 0.114 * base[i * 4 + 2]) / 255;
+    for (let ch = 0; ch < 3; ch++) {
+      const a = base[i * 4 + ch] / 255;
+      col[i * 3 + ch] += 255 * ((a + (y - a) * 0.35) * L[i * 3 + ch] * s + G[i * 3 + ch]);
+    }
+  }
+  // and the lights themselves: a lit pane, a flame, a bulb.  A pane is lit paper or glass with a frame
+  // in front of it, so the picture's own light and dark still shows through the glow.
+  for (const s of list) {
+    const p = PANE[s.tone], k = Math.min(1, f * 1.15) * Math.min(1, 0.5 + s.power * 0.5), R = s.r;
+    const shape = s.kind === 'lamp' ? (dx, dy) => Math.exp(-(dx * dx + dy * dy) / ((0.6 + 0.07 * s.tall) ** 2))
+      : s.kind === 'lantern' ? (dx, dy) => smooth(1.1, 0.75, Math.hypot(dx, dy) / (0.85 * R))
+      : (dx, dy) => smooth(1.4, 0.7, (Math.abs(dx) / (0.95 * R)) ** 4 + (Math.abs(dy) / (0.75 * R)) ** 4);
+    over(s.x, s.y, s.kind === 'lamp' ? 3 + 0.2 * s.tall : R * 1.3, (i, dx, dy) => {
+      const a = shape(dx, dy) * k * (s.kind === 'lamp' ? 1 : 0.85);
+      const frame = s.kind === 'lamp' ? 1 : 0.6 + 0.6 * (0.299 * base[i * 4] + 0.587 * base[i * 4 + 1] + 0.114 * base[i * 4 + 2]) / 255;
+      for (let ch = 0; ch < 3; ch++) col[i * 3 + ch] += (255 * p[ch] * frame - col[i * 3 + ch]) * a;
+    });
+  }
+  return list.map(s => ({ kind: s.kind, tone: s.tone, power: s.power, x: s.x / w, y: s.y / h, r: s.r / w }));
 }
 
 // ---------- the canvases ----------
@@ -423,7 +510,8 @@ const glow = (r, g, b) => {
   x.fillStyle = gr; x.fillRect(0, 0, 64, 64);
   return c;
 };
-const FIREFLY = glow(205, 255, 120), LAMP = glow(255, 190, 90);
+const FIREFLY = glow(205, 255, 120), WARM = glow(255, 190, 90);
+const GLOW = { warm: WARM, pale: WARM, cool: glow(200, 222, 255), flame: glow(255, 150, 70), street: glow(214, 236, 255) };
 
 // Falling leaves and petals: pictures in assets/sprites/, drawn by tools/sprites.html.
 const picture = name => { const img = new Image(); img.decoding = 'async'; img.src = `assets/sprites/${name}.png`; return img; };
@@ -469,13 +557,22 @@ function sprites(t, dt) {
       tctx.fillRect(view.ox + s.x * scene.w * view.s, view.oy + s.y * scene.h * view.s, r, r);
     }
   }
-  if (time !== 'day') {                                                        // lamps and windows, never quite steady
+  if (time !== 'day') {                      // the glow about each light: street lamps steady, windows nearly, flames not at all
     tctx.globalCompositeOperation = 'lighter';
-    for (let k = 0; k < scene.place.lights.length; k++) {
-      const [lx, ly, lr] = scene.place.lights[k];
-      const r = Math.max(5, lr * scene.w * view.s * 3.2);
-      tctx.globalAlpha = (night ? 0.2 : 0.1) * (still ? 1 : 0.8 + 0.2 * Math.sin(t * (2.1 + (k % 5) * 0.7) + k * 1.7) * Math.sin(t * 0.9 + k));
-      tctx.drawImage(LAMP, view.ox + lx * scene.w * view.s - r, view.oy + ly * scene.h * view.s - r, r * 2, r * 2);
+    for (let k = 0; k < scene.glows.length; k++) {
+      const g = scene.glows[k], lamp = g.kind === 'lamp';
+      const r = Math.max(lamp ? 4 : 5, g.r * scene.w * view.s * (lamp ? 3.6 : 3.2));
+      const wave = Math.sin(t * (2.1 + (k % 5) * 0.7) + k * 1.7) * Math.sin(t * 0.9 + k);
+      const flicker = still || lamp ? 1 : g.kind === 'lantern' ? 0.8 + 0.2 * wave : 0.94 + 0.06 * wave;
+      tctx.globalAlpha = (night ? 0.2 : 0.1) * (lamp ? 1.2 : 1) * g.power * flicker;
+      tctx.drawImage(GLOW[g.tone], view.ox + g.x * scene.w * view.s - r, view.oy + g.y * scene.h * view.s - r, r * 2, r * 2);
+      if (lamp) {                                                              // the bulb: smaller than any brush, so not painted but put here
+        tctx.globalCompositeOperation = 'source-over';
+        tctx.globalAlpha = night ? 0.95 : 0.7;
+        tctx.fillStyle = '#f4fbff';
+        tctx.beginPath(); tctx.arc(view.ox + g.x * scene.w * view.s, view.oy + g.y * scene.h * view.s, Math.max(1, g.r * scene.w * view.s * 0.35), 0, TAU); tctx.fill();
+        tctx.globalCompositeOperation = 'lighter';
+      }
     }
     tctx.globalCompositeOperation = 'source-over';
   }

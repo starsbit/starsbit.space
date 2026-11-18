@@ -5,7 +5,13 @@
 
 Reads   assets/source/{1..4}.webp   (the photographs, taken in summer)
 Writes  assets/paintings/{id}-{season}.webp, assets/paintings/{id}-mask.png
-        and js/scenes.js (sizes, lights, where the moon hangs).
+        and js/scenes.js (sizes, lights, street lamps, where the moon hangs).
+        python3 tools/build_paintings.py --scenes   writes only js/scenes.js.
+
+Lights are (x, y, r) or (x, y, r, kind) on the print: a window unless the kind
+says 'lantern'; the lit windows scattered over a village are 'house', some of
+which the page leaves dark.  Street lamps are (x, head, foot): where the lamp
+hangs and the point on the ground straight below it, where its light falls.
 
 Every pixel is first sorted into sky, leaves, field, water or "built"; the
 handful of shapes that colour cannot tell apart (roofs, the pond, the ground)
@@ -35,6 +41,10 @@ PLACES = [
          sky_below=0.36, sky_v=0.64, moon=(0.57, 0.07, 0.022),
          village=[(30, 440), (700, 400), (1250, 400), (1480, 440), (1330, 560), (1260, 700), (1500, 760),
                   (1350, 800), (900, 1010), (600, 960), (120, 900), (0, 720)],
+         # along the road down the middle, the main street of the village and the lanes by the paddies
+         lamps=[(857, 470, 482), (868, 520, 535), (880, 575, 592), (893, 625, 645), (830, 672, 690), (815, 760, 790),
+                (832, 850, 885), (862, 925, 965), (470, 640, 658), (640, 672, 690), (300, 552, 568), (1100, 660, 680),
+                (1150, 752, 772)],
          haze=0.42),
     dict(id='hojo-residence', src='2', name='Hōjō Residence', kanji='北条家', h=1125, focus=(0.5, 0.45),
          sky_below=0.10,
@@ -64,7 +74,8 @@ PLACES = [
          hard=[[(40, 1090), (1960, 1090), (2000, 1500), (0, 1500)], [(280, 560), (1640, 560), (1640, 1090), (280, 1090)]],
          ground=[[(40, 1090), (1960, 1090), (2000, 1500), (0, 1500)]],
          bloom=0.15,
-         lights=[(365, 715, 26), (1585, 715, 26), (960, 572, 16), (960, 960, 70), (1550, 745, 18), (660, 760, 18)]),
+         lights=[(365, 715, 26, 'lantern'), (1585, 715, 26, 'lantern'), (960, 572, 16, 'lantern'), (960, 960, 70, 'lantern'),
+                 (1550, 745, 18, 'lantern'), (660, 760, 18, 'lantern')]),
 ]
 SEASONS = ['spring', 'summer', 'autumn', 'winter']
 
@@ -224,6 +235,7 @@ def paint(rgb, c, place, season, rng):
 
 
 def main():
+    pictures = '--scenes' not in sys.argv[1:]      # --scenes: only the lights and the rest in js/scenes.js
     os.makedirs(OUT, exist_ok=True)
     scenes = []
     for n, place in enumerate(PLACES):
@@ -231,25 +243,27 @@ def main():
         h = round(im.height * W / im.width)
         rgb = np.asarray(im.resize((W, h), Image.LANCZOS), dtype=np.float32) / 255
         c = classify(rgb, place)
-        for season in SEASONS:
+        for season in SEASONS if pictures else []:
             out = paint(rgb, c, place, season, np.random.default_rng(7 + n))
             Image.fromarray((out * 255 + 0.5).astype(np.uint8)).save(
                 os.path.join(OUT, f"{place['id']}-{season}.webp"), quality=80, method=6)
-        mh = round(h * MASK_W / W)
-        sway = np.maximum(c['veg'] * (1 - np.clip(c['water'] * 2, 0, 1)), 0)
-        mask = np.dstack([c['sky'], sway, np.clip(c['water'], 0, 1)])
-        Image.fromarray((mask * 255).astype(np.uint8)).resize((MASK_W, mh), Image.BILINEAR).save(
-            os.path.join(OUT, f"{place['id']}-mask.png"), optimize=True)
+        if pictures:
+            mh = round(h * MASK_W / W)
+            sway = np.maximum(c['veg'] * (1 - np.clip(c['water'] * 2, 0, 1)), 0)
+            mask = np.dstack([c['sky'], sway, np.clip(c['water'], 0, 1)])
+            Image.fromarray((mask * 255).astype(np.uint8)).resize((MASK_W, mh), Image.BILINEAR).save(
+                os.path.join(OUT, f"{place['id']}-mask.png"), optimize=True)
         ph = place['h']
-        lights = [[round(x / 2000, 4), round(y / ph, 4), round(r / 2000, 4)] for x, y, r in place.get('lights', [])]
+        lights = [[round(x / 2000, 4), round(y / ph, 4), round(r / 2000, 4), *kind] for x, y, r, *kind in place.get('lights', [])]
         if 'village' in place:           # the village from above: a scatter of lit windows among the roofs
             rng = np.random.default_rng(3)
             ok = (c['village'] > 0.6) & (c['veg'] < 0.5) & (c['field'] < 0.2) & (c['sky'] < 0.5)
             ys, xs = np.nonzero(ok)
             for i in rng.choice(len(xs), 46, replace=False):
-                lights.append([round(xs[i] / W, 4), round(ys[i] / h, 4), round(float(rng.uniform(0.003, 0.0055)), 4)])
+                lights.append([round(xs[i] / W, 4), round(ys[i] / h, 4), round(float(rng.uniform(0.003, 0.0055)), 4), 'house'])
+        lamps = [[round(x / 2000, 4), round(top / ph, 4), round(foot / ph, 4)] for x, top, foot in place.get('lamps', [])]
         scenes.append(dict(id=place['id'], name=place['name'], kanji=place['kanji'], w=W, h=h,
-                           focus=place['focus'], moon=place.get('moon'), lights=lights))
+                           focus=place['focus'], moon=place.get('moon'), lights=lights, lamps=lamps))
         print(place['id'], 'done')
     with open(os.path.join(ROOT, 'js', 'scenes.js'), 'w') as f:
         f.write('/* Generated by tools/build_paintings.py.  Not to be edited. */\n')
