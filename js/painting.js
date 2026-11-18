@@ -728,10 +728,10 @@ function next(step = 1) {
 // <audio>'s volume, and it fades in and out rather than starting and stopping.
 // With the music on, the higurashi, the evening cicadas, are heard in the trees now and then: half a
 // minute or so of them, then a minute to three of quiet, in any season; and all evening on a summer dusk,
-// their own hour (assets/higurashi.mp3, recorded by Σ64, CC BY 4.0).  Their loop plays along unheard the
+// their own hour (assets/higurashi.mp3, their sound from the game).  Their loop plays along unheard the
 // whole time the music is on and is only turned up and down, so it never has to be started without a click.
 const music = document.getElementById('music'), tune = document.getElementById('tune'), cicadas = document.getElementById('cicadas');
-const QUIET = 0.2, CICADAS = 0.35;
+const QUIET = 0.2, CICADAS = 0.2;                                           // the cicadas a little under the piano
 let audio = null, gain = null, cgain = null, singing = false, spell = 0;
 const fade = (g, to, seconds) => {
   const t = audio.currentTime;

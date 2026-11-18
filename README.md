@@ -35,8 +35,8 @@ lights and the street lamps; after changing only those, write just
 
 With the music on, the higurashi are heard in the trees now and then: half a
 minute or so of them, then a minute to three of quiet, in any season, and all
-evening on a summer dusk. `assets/higurashi.mp3` is a recording by Σ64
-(Wikimedia Commons, CC BY 4.0), cleaned up and made to loop.
+evening on a summer dusk. `assets/higurashi.mp3` is their sound from the game,
+*Higurashi no Naku Koro ni*.
 
 ## Redrawing the falling leaves and blossoms
 
