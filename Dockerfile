@@ -2,7 +2,7 @@
 # Build: docker build -t starsbit-space .   Run: docker run -p 8080:8080 starsbit-space
 FROM nginxinc/nginx-unprivileged:1.29-alpine
 COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
-COPY index.html /usr/share/nginx/html/
+COPY index.html google68a785d1b6ad166e.html /usr/share/nginx/html/
 COPY css /usr/share/nginx/html/css
 COPY js /usr/share/nginx/html/js
 COPY assets/paintings /usr/share/nginx/html/assets/paintings
