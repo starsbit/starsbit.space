@@ -670,7 +670,7 @@ let asked = 0;
 async function show() {
   const mine = ++asked;
   const place = PLACES.find(p => p.id === state.place);
-  document.title = `${place.name} - starsbit.space`;
+  document.title = `${place.name} - starsbit.moe`;
   where.querySelector('.label').textContent = place.kanji;
   where.querySelector('.name').textContent = place.name;
   try {

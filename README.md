@@ -1,4 +1,4 @@
-# starsbit.space
+# starsbit.moe
 
 Four paintings of Hinamizawa that never dry. A canvas is brushed over, stroke by
 stroke, with what the place looks like in the season and at the hour it is in
