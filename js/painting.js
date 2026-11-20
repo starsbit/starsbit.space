@@ -799,20 +799,21 @@ const logo = document.getElementById('logo'), about = document.getElementById('a
 about.querySelector('.year').textContent = new Date().getFullYear();
 const reading = () => about.classList.contains('open');
 let putting = 0;
-function card(open) {
+function card(open, focus = true) {
   clearTimeout(putting);
   logo.setAttribute('aria-expanded', open);
   if (open) {
     about.hidden = false;
     about.getBoundingClientRect();                                             // let it be drawn rolled up first, so it unrolls
     about.classList.add('open');
-    about.focus({ preventScroll: true });
+    if (focus) about.focus({ preventScroll: true });
   } else {
     about.classList.remove('open');
     putting = setTimeout(() => { about.hidden = true; }, still ? 0 : 560);
   }
 }
 logo.addEventListener('click', () => card(!reading()));
+card(true, false);                                                             // open on arrival, without taking the keys from the arrows
 
 // ---------- the season and the hour, picked at the bottom ----------
 almanac.addEventListener('click', e => {
